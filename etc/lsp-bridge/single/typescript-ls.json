@@ -1,0 +1,16 @@
+{
+  "name": "typescript-ls",
+  "languageId": "",
+  "command": ["typescript-language-server", "--stdio"],
+  "initializationOptions": {
+    "disableAutomaticTypingAcquisition": false,
+    "preferences": {
+      "includePackageJsonAutoImports": "on",
+      "quotePreference": "double",
+      "jsxAttributeCompletionStyle": "auto",
+      "importModuleSpecifierPreference": "shortest",
+      "importModuleSpecifierEnding": "js"
+    }
+  },
+  "settings": {}
+}

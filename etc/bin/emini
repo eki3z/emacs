@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# open emacs in minimal config without server
+
+set -ue
+emacs -q -l "~/.config/emacs/init-mini.el"

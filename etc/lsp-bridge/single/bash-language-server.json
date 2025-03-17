@@ -1,0 +1,17 @@
+{
+  "name": "bash-language-server",
+  "languageId": "bash",
+  "command": ["bash-language-server", "start"],
+  "settings": {
+    "bashIde": {
+      "backgroundAnalysisMaxFiles": 500,
+      "enableSourceErrorDiagnostics": false,
+      "globPattern": "**/*@(.sh|.inc|.bash|.command)",
+      "explainshellEndpoint": "",
+      "logLevel": "info",
+      "includeAllWorkspaceSymbols": false,
+      "shellcheckPath": "",
+      "shellcheckArguments": []
+    }
+  }
+}

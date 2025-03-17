@@ -1,0 +1,6 @@
+# ignore everything unless we add it here
+
+.cache/
+eln-cache/
+tree-sitter/
+*.el

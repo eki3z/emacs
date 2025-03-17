@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+#
+set -ue
+
+source "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")/lib/emacsclient.sh"
+
+emacsclient::ensure_running
+
+case "${#}" in
+  1)
+    MERGED=$(realpath "$1")
+    EVAL="find-file \"${MERGED}\""
+    ;;
+  2)
+    LOCAL=$(realpath "$1")
+    REMOTE=$(realpath "$2")
+    EVAL="ediff-files \"${LOCAL}\" \"${REMOTE}\""
+    ;;
+  3)
+    LOCAL=$(realpath "$1")
+    REMOTE=$(realpath "$2")
+    MERGED=$(realpath "$3")
+    EVAL="ediff-merge-files \"${LOCAL}\" \"${REMOTE}\" nil \"${MERGED}\""
+    ;;
+  4)
+    LOCAL=$(realpath "$1")
+    REMOTE=$(realpath "$2")
+    MERGED=$(realpath "$3")
+    BASE=$(realpath "$4")
+    EVAL="ediff-merge-files-with-ancestor \"${LOCAL}\" \"${REMOTE}\" \"${BASE}\"
+ nil \"${MERGED}\""
+    ;;
+esac
+
+emacsclient -q -c -e "(${EVAL})" 2>&1
+
+exit $?

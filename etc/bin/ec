@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# open a existed gui frame of emacs or a new one if not exist to edit files
+
+set -ue
+
+source "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")/lib/emacsclient.sh"
+
+emacsclient::ensure_running
+
+# make sure at least one gui frame exists
+[[ "$(emacsclient::gui_frame_length)" -eq 0 ]] && emacsclient -q -n -c
+
+emacsclient::gui_open "$@"

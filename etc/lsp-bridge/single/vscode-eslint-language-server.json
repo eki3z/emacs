@@ -1,0 +1,23 @@
+{
+  "name": "vscode-eslint-language-server",
+  "languageId": "",
+  "command": ["vscode-eslint-language-server", "--stdio"],
+  "settings": {
+    "eslint": {
+      "enable": true,
+      "useESLintClass": true,
+      "run": "onType",
+      "nodePath": null,
+      "codeAction": {
+        "disableRuleComment": {
+          "enable": true,
+          "location": "separateLine",
+          "commentStyle": "line"
+        },
+        "showDocumentation": {
+          "enable": true
+        }
+      }
+    }
+  }
+}

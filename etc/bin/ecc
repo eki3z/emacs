@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# open a new gui frame of emacs to edit files
+
+set -ue
+
+source "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")/lib/emacsclient.sh"
+
+emacsclient::ensure_running
+emacsclient -q -n -c
+emacsclient::gui_open "#@"
