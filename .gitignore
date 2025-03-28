@@ -3,4 +3,6 @@
 .cache/
 eln-cache/
 tree-sitter/
-*.el
+init.el
+init-mini.el
+early-init.el
