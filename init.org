@@ -465,6 +465,27 @@ FN-R : region function, FN: default function"
            (load (cdr (find-function-library mode)) nil t))
          (memq (or (alist-get mode minor-fallback-alist) mode) minor-mode-list))))
 
+;; (defun major-mode-p (sym)
+;;   "Return t if SYM is a major mode."
+;;   (and (functionp sym)
+;;        (string-match-p "-mode$" (symbol-name sym))
+;;        (autoload-do-load (symbol-function sym))
+;;        (seq-some (lambda (p) (get sym p))
+;;                  '(derived-mode-parent
+;;                    derived-mode-extra-parents
+;;                    derived-mode--all-parents
+;;                    derived-mode--followers))
+;;        t))
+
+(defun get-major-mode-for-file (filename)
+  "Return the major mode for FILENAME, including shebang check."
+  (with-temp-buffer
+    (let ((buffer-file-name (expand-file-name filename)))
+      (when (file-readable-p filename)
+        (insert-file-contents filename nil 0 100))
+      (set-auto-mode)
+      major-mode)))
+
 (defun feature-preload-p (feature)
   "Return non-nil if FEATURE is pre-loaded by default."
   (and emacs-preload-features
@@ -983,6 +1004,14 @@ elp is useful for seeing which functions in a package are "hot".
 (borg-initialize)
 #+end_src
 
+*** auto-compile
+
+#+BEGIN_SRC emacs-lisp :lexical t
+(require 'compile)
+(setq load-prefer-newer t)
+(auto-compile-on-load-mode)
+#+END_SRC
+
 *** use-package
 
 #+begin_src emacs-lisp :lexical t
@@ -1262,6 +1291,15 @@ make sure emacs server running
 ;;   :init
 ;;   ;; use white space character
 ;;   (setq-default display-fill-column-indicator-character ?\u0020))
+#+end_src
+
+*** tabulated-list
+
+#+begin_src emacs-lisp :lexical t
+(use-package tabulated-list
+  :config
+  (setq tabulated-list-gui-sort-indicator-asc ?⏶)   ;; "\u23F6"
+  (setq tabulated-list-gui-sort-indicator-desc ?⏷)) ;; "\u23F7"
 #+end_src
 
 *** files
@@ -2212,8 +2250,7 @@ A prefix argument means to unmark them instead."
       "Patch `orderless-regexp' with pinyin surpport"
       (setf (car args) (pinyinlib-build-regexp-string (car args)))
       args)
-    (advice-add 'orderless-regexp :filter-args #'ad/orderless-regexp-pinyin))
-  )
+    (advice-add 'orderless-regexp :filter-args #'ad/orderless-regexp-pinyin)))
 #+end_src
 
 *** consult                                                         :minibuffer:
@@ -2807,8 +2844,12 @@ install: ~pthon3 -m pip install epc orjson sexpdata six paramiko ruff-lsp packag
   (defun my/mini-echo-persistent-detect ()
     (with-current-buffer (current-buffer)
       (pcase major-mode
+        ((guard (and (fboundp 'org-src-edit-buffer-p) (org-src-edit-buffer-p)))
+         '(:both ("meow" "org-src" "buffer-position" "buffer-size" "flymake")))
         ((guard (bound-and-true-p atomic-chrome-edit-mode))
          '(:both ("meow" "atomic-chrome" "buffer-name" "buffer-position" "flymake")))
+        ((guard (bound-and-true-p magit-blob-mode))
+         '(:both ("meow" "magit-blob" "buffer-position" "buffer-size")))
         ((guard (or (memq major-mode '(git-commit-elisp-text-mode git-rebase-mode))
                     (string-match-p "\\`magit-.*-mode\\'" (symbol-name major-mode))))
          '(:both ("meow" "major-mode" "project")))
@@ -3529,7 +3570,7 @@ Syntax highlighting of known Elisp symbols
   ("C-c c" . coercion-command-map))
 #+end_src
 
-*** consult-todo                                                  :consult:todo:
+*** consult-todo                                                     :jump:todo:
 
 #+begin_src emacs-lisp :lexical t
 (use-package consult-todo
@@ -3753,7 +3794,7 @@ With a prefix argument prompt for the format."
   (binky-margin-mode))
 #+end_src
 
-*** xref
+*** xref                                                                  :jump:
 
 #+begin_src emacs-lisp :lexical t
 (use-package xref
@@ -3764,7 +3805,7 @@ With a prefix argument prompt for the format."
         xref-show-definitions-function 'xref-show-definitions-completing-read))
 #+end_src
 
-*** goto-addr
+*** goto-addr                                                             :jump:
 
 #+begin_src emacs-lisp :lexical t
 (use-package goto-addr
@@ -4009,6 +4050,12 @@ With a prefix argument prompt for the format."
 
 #+begin_src emacs-lisp :lexical t
 (use-package pandoc-mode)
+#+end_src
+
+*** ddp                                                                   :data:
+
+#+begin_src emacs-lisp :lexical t
+(use-package ddp)
 #+end_src
 
 *** proxy-mode                                                         :network:
@@ -4763,7 +4810,8 @@ Otherwise, behave like `magit-display-buffer-traditional'."
   ;;; status
 
   (setq magit-status-show-hashes-in-headers t
-        magit-status-goto-file-position t)
+        magit-status-goto-file-position nil
+        magit-status-initial-section '(2))
   (prependq! magit-section-initial-visibility-alist
              '((untracked . hide)
                (unpushed  . show)))
@@ -4795,6 +4843,32 @@ Otherwise, behave like `magit-display-buffer-traditional'."
   ;;; submodule
 
   (setq magit-submodule-remove-trash-gitdirs t)
+  (setq magit-submodule-list-sort-key '("B<U" . t))
+  (setq magit-submodule-list-columns
+        `(("Path"     25 ,#'magit-modulelist-column-path
+           ())
+          ("Version"  24 ,#'magit-repolist-column-version
+           ((:sort magit-repolist-version<)))
+          ("Branch"   7 ,#'magit-repolist-column-branch
+           ())
+          ("B<P" 5 ,#'magit-repolist-column-unpulled-from-pushremote
+           ((:right-align t)
+            (:sort <)))
+          ("B<U" 5 ,#'magit-repolist-column-unpulled-from-upstream
+           ((:right-align t)
+            (:sort <)))
+          ("B>P" 5 ,#'magit-repolist-column-unpushed-to-pushremote
+           ((:right-align t)
+            (:sort <)))
+          ("B>U" 5 ,#'magit-repolist-column-unpushed-to-upstream
+           ((:right-align t)
+            (:sort <)))
+          ("S"   3 ,#'magit-repolist-column-stashes
+           ((:right-align t)
+            (:sort <)))
+          ("B"   3 ,#'magit-repolist-column-branches
+           ((:right-align t)
+            (:sort <)))))
 
   ;;; tag
 
@@ -5007,7 +5081,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 (use-package treesit-fold)
 #+end_src
 
-*** builtin language
+*** built-in langs
 
 #+begin_src emacs-lisp :lexical t
 (use-package sh-script
@@ -5018,12 +5092,6 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 (use-package conf-mode
   :mode ("\\.\\(ini\\|conf\\)\\'" "enchant.ordering"
          (("\\.tidyrc\\'") . conf-colon-mode)))
-
-(use-package python
-  :mode ("\\.pythonrc\\'" . python-ts-mode)
-  :bind
-  (:map inferior-python-mode-map
-   ("C-l" . comint-clear-buffer)))
 
 (use-package make-mode
   :mode ("\\(makefile\\|\\.mk\\)\\'" . makefile-gmake-mode))
@@ -5061,7 +5129,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
         c-ts-mode-indent-style 'gnu))
 #+end_src
 
-*** third-party languages
+*** third-party langs
 
 #+begin_src emacs-lisp :lexical t
 
@@ -5070,8 +5138,10 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
 (use-package jq-ts-mode)
 
-(use-package mermaid-ts-mode
-  :mode "\\.\\(mmd\\|mermaid\\)")
+(use-package mermaid-mode
+  :mode "\\.\\(mmd\\|mermaid\\)"
+  :init
+  (setq mermaid-output-format ".pdf"))
 
 (use-package zig-ts-mode
   :mode "\\.zig\\'")
@@ -5222,6 +5292,15 @@ Otherwise, behave like `magit-display-buffer-traditional'."
   (setq macrostep-expand-in-separate-buffer t))
 
 (use-package psearch :demand t)
+#+end_src
+
+*** python
+#+begin_src emacs-lisp :lexical t
+(use-package python
+  :mode ("\\.pythonrc\\'" . python-ts-mode)
+  :bind
+  (:map inferior-python-mode-map
+   ("C-l" . comint-clear-buffer)))
 #+end_src
 
 *** css                                                                    :web:
@@ -5734,12 +5813,13 @@ The DWIM behaviour of this command is as follows:
 (defvar-keymap ctl-x-7-map
   :doc "Keymap for `transpose-frame' commands"
   :repeat t
-  "t" #'transpose-frame
-  "i" #'flip-frame
-  "o" #'flop-frame
-  "r" #'rotate-frame
-  "c" #'rotate-frame-clockwise
-  "a" #'rotate-frame-anticlockwise)
+  "t" #'transpose-window-layout
+  "v" #'flip-window-layout-vertically
+  "h" #'flip-window-layout-horizontally
+  "r" #'rotate-windows
+  "b" #'rotate-windows-back
+  "c" #'rotate-window-layout-clockwise
+  "a" #'rotate-window-layout-counterclockwise)
 (keymap-set ctl-x-map "7" ctl-x-7-map)
 
 (defvar-keymap my/edit-map
@@ -5780,7 +5860,7 @@ The DWIM behaviour of this command is as follows:
 
 *** envrionment                                                            :dev:
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :tangle no
 ;; for npm/pnpm project
 ;; create or add path
 ;; allow envrc
@@ -5817,6 +5897,19 @@ The DWIM behaviour of this command is as follows:
   ;; (keymap-set combobulate-proffer-map "ESC" 'cancel)
   ;; (keymap-set combobulate-proffer-map "C-e" 'cancel)
   )
+#+end_src
+
+*** emigo
+
+#+begin_src emacs-lisp :lexical t
+(use-package emigo
+  :config
+  (emigo-enable)
+  (setq emigo-model "openrouter/deepseek/deepseek-chat-v3-0324")
+  ;; (setq emigo-model "openrouter/google/gemini-2.5-pro-exp-03-25:free")
+  (setq emigo-base-url "https://openrouter.ai/api/v1")
+  (setq emigo-api-key openrouter-api-key)
+  (setq emigo-window-width 80))
 #+end_src
 
 ** init end

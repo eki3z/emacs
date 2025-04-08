@@ -9,10 +9,6 @@
 [submodule "apheleia"]
 	path = lib/apheleia
 	url = https://github.com/radian-software/apheleia
-[submodule "astro-ts-mode"]
-	path = lib/astro-ts-mode
-	url = https://github.com/Sorixelle/astro-ts-mode
-	build-step = borg-update-autoloads
 [submodule "async"]
 	path = lib/async
 	url = https://github.com/jwiegley/emacs-async
@@ -22,12 +18,12 @@
 [submodule "authinfo-color-mode"]
 	path = lib/authinfo-color-mode
 	url = https://github.com/tecosaur/authinfo-color-mode.git
+[submodule "auto-compile"]
+	path = lib/auto-compile
+	url = https://github.com/emacscollective/auto-compile
 [submodule "benchmark-init"]
 	path = lib/benchmark-init
 	url = https://github.com/dholm/benchmark-init-el
-[submodule "bicycle"]
-	path = lib/bicycle
-	url = https://github.com/tarsius/bicycle
 [submodule "binky"]
 	path = lib/binky
 	url = https://github.com/eki3z/binky.el
@@ -38,9 +34,6 @@
 [submodule "browse-at-remote"]
 	path = lib/browse-at-remote
 	url = https://github.com/rmuslimov/browse-at-remote
-[submodule "clojure-ts-mode"]
-	path = lib/clojure-ts-mode
-	url = https://github.com/clojure-emacs/clojure-ts-mode
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql.git
@@ -59,15 +52,9 @@
 [submodule "consult"]
 	path = lib/consult
 	url = https://github.com/minad/consult
-[submodule "consult-denote"]
-	path = lib/consult-denote
-	url = https://github.com/protesilaos/consult-denote
 [submodule "consult-dir"]
 	path = lib/consult-dir
 	url = https://github.com/karthink/consult-dir
-[submodule "consult-gh"]
-	path = lib/consult-gh
-	url = https://github.com/armindarvish/consult-gh
 [submodule "consult-todo"]
 	path = lib/consult-todo
 	url = https://github.com/eki3z/consult-todo
@@ -83,21 +70,15 @@
 [submodule "ct"]
 	path = lib/ct
 	url = https://github.com/neeasade/ct.el
-[submodule "dart-ts-mode"]
-	path = lib/dart-ts-mode
-	url = https://github.com/50ways2sayhard/dart-ts-mode.git
 [submodule "dash"]
 	path = lib/dash
 	url = https://github.com/magnars/dash.el
+[submodule "ddp"]
+	path = lib/ddp
+	url = https://github.com/eki3z/ddp.el.git
 [submodule "deferred"]
 	path = lib/deferred
 	url = https://github.com/kiwanami/emacs-deferred
-[submodule "deno-bridge"]
-	path = lib/deno-bridge
-	url = https://github.com/manateelazycat/deno-bridge.git
-[submodule "denote"]
-	path = lib/denote
-	url = https://github.com/protesilaos/denote
 [submodule "diff-hl"]
 	path = lib/diff-hl
 	url = https://github.com/dgutov/diff-hl
@@ -130,9 +111,6 @@
 [submodule "edit-indirect"]
 	path = lib/edit-indirect
 	url = https://github.com/Fanael/edit-indirect
-[submodule "elec-pair-extra"]
-	path = lib/elec-pair-extra
-	url = https://github.com/eki3z/elec-pair-extra.git
 [submodule "elfeed"]
 	path = lib/elfeed
 	url = https://github.com/skeeto/elfeed
@@ -257,12 +235,6 @@
 [submodule "ibuffer-vc"]
 	path = lib/ibuffer-vc
 	url = https://github.com/purcell/ibuffer-vc
-[submodule "igist"]
-	path = lib/igist
-	url = https://github.com/KarimAziev/igist
-[submodule "impatient-mode"]
-	path = lib/impatient-mode
-	url = https://github.com/skeeto/impatient-mode
 [submodule "info-colors"]
 	path = lib/info-colors
 	url = https://github.com/ubolonton/info-colors
@@ -329,9 +301,9 @@
 [submodule "meow-tree-sitter"]
 	path = lib/meow-tree-sitter
 	url = https://github.com/skissue/meow-tree-sitter
-[submodule "mermaid-ts-mode"]
-	path = lib/mermaid-ts-mode
-	url = https://github.com/JonathanHope/mermaid-ts-mode
+[submodule "mermaid-mode"]
+	path = lib/mermaid-mode
+	url = https://github.com/abrochard/mermaid-mode
 [submodule "mini-echo"]
 	path = lib/mini-echo
 	url = https://github.com/eki3z/mini-echo.el
@@ -358,13 +330,6 @@
 [submodule "no-littering"]
 	path = lib/no-littering
 	url = https://github.com/emacscollective/no-littering
-[submodule "nodejs-repl"]
-	path = lib/nodejs-repl
-	url = https://github.com/abicky/nodejs-repl.el
-	branch = develop
-[submodule "nushell-ts-mode"]
-	path = lib/nushell-ts-mode
-	url = https://github.com/herbertjones/nushell-ts-mode
 [submodule "obvious"]
 	path = lib/obvious
 	url = https://github.com/emacsmirror/csv-mode.git
@@ -383,6 +348,9 @@
 [submodule "org-modern"]
 	path = lib/org-modern
 	url = https://github.com/minad/org-modern
+[submodule "org-roam"]
+	path = lib/org-roam
+	url = https://github.com/org-roam/org-roam
 [submodule "ox-gfm"]
 	path = lib/ox-gfm
 	url = https://github.com/larstvei/ox-gfm
@@ -404,9 +372,6 @@
 [submodule "pip-requirements"]
 	path = lib/pip-requirements
 	url = https://github.com/Wilfred/pip-requirements.el
-[submodule "plur"]
-	path = lib/plur
-	url = https://github.com/xuchunyang/plur
 [submodule "plz"]
 	path = lib/plz
 	url = https://github.com/alphapapa/plz.el
@@ -436,9 +401,6 @@
 	url = https://github.com/emacsorphanage/quickrun
 	remote = "eki3z https://github.com/eki3z/quickrun"
 	branch = fix-bugs
-[submodule "quicktype"]
-	path = lib/quicktype
-	url = https://github.com/Artawower/quicktype.el.git
 [submodule "rainbow-delimiters"]
 	path = lib/rainbow-delimiters
 	url = https://github.com/Fanael/rainbow-delimiters
@@ -448,15 +410,15 @@
 [submodule "relint"]
 	path = lib/relint
 	url = https://github.com/mattiase/relint
+[submodule "repeat-fu"]
+	path = lib/repeat-fu
+	url = https://codeberg.org/ideasman42/emacs-repeat-fu
 [submodule "repeat-help"]
 	path = lib/repeat-help
 	url = https://github.com/karthink/repeat-help
 [submodule "request"]
 	path = lib/request
 	url = https://github.com/tkf/emacs-request
-[submodule "restclient"]
-	path = lib/restclient
-	url = https://github.com/pashky/restclient.el
 [submodule "reverso"]
 	path = lib/reverso
 	url = https://github.com/SqrtMinusOne/reverso.el
@@ -481,9 +443,6 @@
 [submodule "shrink-path"]
 	path = lib/shrink-path
 	url = https://gitlab.com/bennya/shrink-path.el
-[submodule "simple-httpd"]
-	path = lib/simple-httpd
-	url = https://github.com/skeeto/emacs-web-server
 [submodule "simpleclip"]
 	path = lib/simpleclip
 	url = https://github.com/rolandwalker/simpleclip
@@ -493,33 +452,18 @@
 [submodule "spinner"]
 	path = lib/spinner
 	url = https://github.com/Malabarba/spinner.el
-[submodule "spookfox"]
-	path = lib/spookfox
-	url = https://github.com/bitspook/spookfox.git
-[submodule "sql-indent"]
-	path = lib/sql-indent
-	url = https://github.com/alex-hhh/emacs-sql-indent
 [submodule "ssh-config-mode"]
 	path = lib/ssh-config-mode
 	url = https://github.com/peterhoeg/ssh-config-mode-el
-[submodule "swift-ts-mode"]
-	path = lib/swift-ts-mode
-	url = https://github.com/rechsteiner/swift-ts-mode
 [submodule "tera-mode"]
 	path = lib/tera-mode
 	url = https://github.com/svavs/tera-mode.git
 [submodule "terminal-focus-reporting"]
 	path = lib/terminal-focus-reporting
 	url = https://github.com/emacsattic/terminal-focus-reporting
-[submodule "testrun"]
-	path = lib/testrun
-	url = https://github.com/martini97/testrun.el.git
 [submodule "transient-showcase"]
 	path = lib/transient-showcase
 	url = https://github.com/positron-solutions/transient-showcase.git
-[submodule "transpose-frame"]
-	path = lib/transpose-frame
-	url = https://github.com/emacsorphanage/transpose-frame
 [submodule "tree-sitter-module"]
 	path = lib/tree-sitter-module
 	url = https://github.com/casouri/tree-sitter-module.git
@@ -536,18 +480,9 @@
 [submodule "ts-docstr"]
 	path = lib/ts-docstr
 	url = https://github.com/emacs-vs/ts-docstr.git
-[submodule "typst-preview"]
-	path = lib/typst-preview
-	url = https://github.com/havarddj/typst-preview.el.git
-[submodule "typst-ts-mode"]
-	path = lib/typst-ts-mode
-	url = https://codeberg.org/meow_king/typst-ts-mode
 [submodule "undo-fu-session"]
 	path = lib/undo-fu-session
 	url = https://codeberg.org/ideasman42/emacs-undo-fu-session
-[submodule "undo-hl"]
-	path = lib/undo-hl
-	url = https://github.com/eki3z/undo-hl.git
 [submodule "uniline"]
 	path = lib/uniline
 	url = https://github.com/tbanel/uniline
