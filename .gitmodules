@@ -262,6 +262,9 @@
 [submodule "license-templates"]
 	path = lib/license-templates
 	url = https://github.com/jcs-elpa/license-templates
+[submodule "lin"]
+	path = lib/lin
+	url = https://github.com/protesilaos/lin
 [submodule "lisp-keyword-indent"]
 	path = lib/lisp-keyword-indent
 	url = https://github.com/twlz0ne/lisp-keyword-indent.el.git
@@ -274,6 +277,9 @@
 [submodule "llama"]
 	path = lib/llama
 	url = https://github.com/tarsius/llama.git
+[submodule "logos"]
+	path = lib/logos
+	url = https://github.com/protesilaos/logos
 [submodule "lsp-bridge"]
 	path = lib/lsp-bridge
 	url = https://github.com/manateelazycat/lsp-bridge
