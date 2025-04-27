@@ -61,11 +61,12 @@ setup frame properties
         (tool-bar-lines . 0)
         (vertical-scroll-bars . nil)
         (horizontal-scroll-bars . nil)
-        (left-fringe . 0)
-        (right-fringe . 0)
-        (internal-border-width . 0)
-        (width . 90) ; (frame-text-width) half 90,full 180
         (fullscreen . fullheight)
+        ;; (left-fringe . 2)
+        ;; (right-fringe . 2)
+        ;; (internal-border-width . 0)
+
+        ;; (width . 90) ; (frame-text-width) half 90,full 180
         ;; (background-mode . dark)
         ;; (alpha . (98 . 100))
 
@@ -176,7 +177,7 @@ setup font
 
 ;; setup default frame
 (add-to-list 'default-frame-alist `(font . ,my/default-font))
-
+;; (set-fontset-font "fontset-default" 'unicode "Symbols Nerd Font Mono-17")
 ;; ;; setup chinese patch
 ;; (defun my/patch-chinese-charset ()
 ;;   "Patch chinese character with lxgw font."
@@ -243,10 +244,10 @@ cancel disable property for some commands
 
 (setq-default tab-width 4
               fill-column 85
-              fringes-outside-margins t
               fringe-indicator-alist nil
-              left-margin-width 1
-              right-margin-width 1
+              ;; fringes-outside-margins nil
+              ;; left-margin-width 1
+              ;; right-margin-width 1
               line-spacing 0.15
               default-directory "~")
 
@@ -908,6 +909,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 #+end_src
 
 ** debugging
+
 Running this form will launch the debugger after loading a package.
 This is useful for finding out when a dependency is requiring a package (perhaps earlier than you want).
 Use by tangling this block and launching Emacs with =emacs --debug-init=.
@@ -1161,7 +1163,7 @@ make sure emacs server running
 
 *** display-line-number
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :tangle no
 (use-package display-line-numbers
   :hook (after-init-hook . global-display-line-numbers-mode)
   :init
@@ -1180,36 +1182,22 @@ make sure emacs server running
 
 *** hl-line
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :tangle no
 (use-package hl-line
-  :hook
-  ((prog-mode-hook text-mode-hook ibuffer-mode-hook rg-mode-hook) . hl-line-mode)
-  :init
+  :config
   (setq hl-line-sticky-flag nil)
-  (setq global-hl-line-sticky-flag nil)
+  (setq global-hl-line-sticky-flag nil))
+#+end_src
 
-  ;; HACK show/hide hl-line-mode according to region is active or not
-  ;; (defvar-local hl-line-recover-p nil)
-  ;; (add-hook 'post-command-hook #'my/toggle-hl-line-with-selection)
-  ;; (defun my/toggle-hl-line-with-selection ()
-  ;;   "Show or hide hl-line according to whether region is active or not."
-  ;;   (when (boundp hl-line-mode)
-  ;;     (when (or
-  ;;            ;; compatiable with region selection
-  ;;            (and mark-active hl-line-mode)
-  ;;            (and (not mark-active)
-  ;;                 (not hl-line-mode)
-  ;;                 hl-line-recover-p)
-  ;;            ;; ;; TODO compatiable with combobulate refactor
-  ;;            ;; ISSUE https://github.com/mickeynp/combobulate/issues/106
-  ;;            ;; (and combobulate-refactor--active-sessions hl-line-mode)
-  ;;            ;; (and (not combobulate-refactor--active-sessions)
-  ;;            ;;      (not hl-line-mode)
-  ;;            ;;      hl-line-recover-p)
-  ;;            )
-  ;;       (hl-line-mode 'toggle)
-  ;;       (setq-local hl-line-recover-p (not hl-line-recover-p))))))
-  )
+*** lin
+
+#+begin_src emacs-lisp :lexical t
+(use-package lin
+  :hook (after-init-hook . lin-global-mode)
+  :config
+  (appendq! lin-mode-hooks
+            '(prog-mode-hook text-mode-hook rg-mode-hook))
+  (setq lin-face 'hl-line))
 #+end_src
 
 *** desktop
@@ -2635,16 +2623,6 @@ targets."
 ;;    )
 #+end_src
 
-*** bicycle
-
-#+begin_src emacs-lisp :lexical t
-(use-package bicycle
-  :bind
-  (:map outline-minor-mode-map
-   ([C-tab] . bicycle-cycle)
-   ([S-tab] . bicycle-cycle-global)))
-#+end_src
-
 *** yasnippet
 
 #+begin_src emacs-lisp :lexical t
@@ -2679,135 +2657,6 @@ $0`(yas-escape-text yas-selected-text)`")
     :demand t
     :config
     (yasnippet-collection-initialize)))
-#+end_src
-
-*** lsp-bridge
-
-install: ~pthon3 -m pip install epc orjson sexpdata six paramiko ruff-lsp packaging~
-
-#+begin_src emacs-lisp :lexical t
-(use-package lsp-bridge
-  :hook (after-init-hook . global-lsp-bridge-mode)
-  :bind
-  ("M-d" . lsp-bridge-doc-toggle)
-  :init
-  ;; Setup language
-  (setq lsp-bridge-enable-org-babel t)
-  (setq lsp-bridge-python-command "python3")
-  (setq lsp-bridge-python-multi-lsp-server "basedpyright_ruff")
-  (setq lsp-bridge-lua-lsp-server "sumneko")
-  (setq lsp-bridge-c-lsp-server "clangd")
-
-  (setq lsp-bridge-enable-inlay-hint t)
-  (setq lsp-bridge-enable-completion-in-string t)
-  ;; (setq lsp-bridge-completion-in-string-file-types '("vue" "dart"))
-
-  ;; (setq lsp-bridge-completion-popup-predicates nil)
-  ;; ;; Debug
-  ;; (setq lsp-bridge-enable-log t)
-  ;; (setq lsp-bridge-enable-debug t)
-
-  (defun lsp-bridge-doc-toggle ()
-    (interactive)
-    (if (acm-frame-visible-p lsp-bridge-popup-documentation-frame)
-        (acm-hide)
-      (lsp-bridge-popup-documentation)))
-
-  :config
-  (my/load-features 'init-bridge-detect)
-
-  ;; Setup server
-  (setq lsp-bridge-user-langserver-dir
-        (expand-file-name "lsp-bridge/single" my/dir-etc))
-  (setq lsp-bridge-user-multiserver-dir
-        (expand-file-name "lsp-bridge/multi" my/dir-etc))
-
-  (setq lsp-bridge-enable-diagnostics t
-        lsp-bridge-disable-backup nil)
-
-  (appendq! lsp-bridge-default-mode-hooks
-            '(snippet-mode-hook
-              git-commit-mode-hook
-              mhtml-mode-hook
-              html-mode-hook
-              lua-ts-mode-hook
-              astro-ts-mode-hook
-              js-json-mode-hook
-              moonbit-mode-hook))
-
-  ;; FIXME can not detect frame switch between gui and tui, leads to crash.
-  (use-package acm
-    :bind
-    (:map acm-mode-map
-     ("C-j" . nil)
-     ("C-k" . nil)
-     ;; ("C-;" . acm-switch-templates)
-     )
-    :init
-    (setq acm-enable-quick-access nil
-          acm-enable-tabnine nil
-          acm-enable-doc nil)
-    (setq acm-candidate-match-function 'orderless-flex)
-    ;; yasnippet
-    (setq acm-completion-backend-merge-order
-          '("template-first-part-candidates"
-            "template-second-part-candidates"
-            "mode-first-part-candidates"
-            "mode-second-part-candidates"))
-    (setq acm-backend-yas-candidates-number 3
-          acm-backend-yas-match-by-trigger-keyword t
-          acm-backend-yas-show-trigger-keyword " [%s]")
-
-    :config
-
-    ;; (require 'acm-backend-lsp-workspace-symbol)
-    ;; (setq acm-enable-lsp-workspace-symbol t)
-
-    ;; enable acm cycle style
-    (defun ad/acm-select-prev ()
-      (interactive)
-      (acm-menu-update
-       (cond ((> acm-menu-index 0)
-              (setq-local acm-menu-index (1- acm-menu-index)))
-             ((> acm-menu-offset 0)
-              (setq-local acm-menu-offset (1- acm-menu-offset)))
-             (t (call-interactively #'acm-select-last)))))
-    (advice-add 'acm-select-prev :override #'ad/acm-select-prev)
-
-    (defun ad/acm-select-next ()
-      (interactive)
-      (acm-menu-update
-       (cond ((< acm-menu-index (1- (length acm-menu-candidates)))
-              (setq-local acm-menu-index (1+ acm-menu-index)))
-             ((< (+ acm-menu-offset acm-menu-index) (1- (length acm-candidates)))
-              (setq-local acm-menu-offset (1+ acm-menu-offset)))
-             (t (call-interactively #'acm-select-first)))))
-    (advice-add 'acm-select-next :override #'ad/acm-select-next)
-
-    ;; ;; TODO write a acm-switch-template
-    ;; (defun acm-switch-templates ()
-    ;;   "docstring"
-    ;;   (interactive))
-
-    ;; FIXME wrapper of `lsp-bridge-toggle-sdcv-helper'
-    (defun acm-sdcv-toggle ()
-      "docstring"
-      (interactive)
-      (let ((inhibit-message t))
-        (lsp-bridge-toggle-sdcv-helper)
-        (acm-update)
-        (acm-menu-update)))
-
-    (defun ad/acm-doc-toggle ()
-      (interactive)
-      (if (acm-frame-visible-p acm-doc-frame)
-          (progn
-            (acm-doc-hide)
-            (setq acm-enable-doc nil))
-        (setq acm-enable-doc t)
-        (acm-doc-try-show)))
-    (advice-add 'acm-doc-toggle :override #'ad/acm-doc-toggle))
-  )
 #+end_src
 
 *** repeat
@@ -3439,46 +3288,44 @@ Syntax highlighting of known Elisp symbols
 
 #+end_src
 
-*** undo default
+*** undo                                                                  :undo:
 
 #+begin_src emacs-lisp :lexical t
 (use-package simple
-  :hook (after-init-hook . undo-setup)
+  ;; :hook (after-init-hook . undo-setup)
   :init
   (setq undo-no-redo t)
-  (defun undo-setup ()
+  ;; (defun undo-setup ()
 
-    ;; BUG https://lists.gnu.org/archive/html/bug-gnu-emacs/2022-12/msg01661.html
-    ;; invalid-read-syntax
-    ;; jump after inserted text after undo-redo
-    ;; (psearch-patch primitive-undo
-    ;;   (psearch-forward '`(goto-char . ,rest)
-    ;;                    t (lambda (_ bounds)
-    ;;                        (when (= psearch-count-current 5)
-    ;;                          (delete-region (car bounds) (cdr bounds)))
-    ;;                        t)
-    ;;                    5))
-    ;;
+  ;; BUG https://lists.gnu.org/archive/html/bug-gnu-emacs/2022-12/msg01661.html
+  ;; invalid-read-syntax
+  ;; jump after inserted text after undo-redo
+  ;; (psearch-patch primitive-undo
+  ;;   (psearch-forward '`(goto-char . ,rest)
+  ;;                    t (lambda (_ bounds)
+  ;;                        (when (= psearch-count-current 5)
+  ;;                          (delete-region (car bounds) (cdr bounds)))
+  ;;                        t)
+  ;;                    5))
+  ;;
 
-    ;; SEE https://github.com/oantolin/emacs-config/blob/master/my-lisp/block-undo.el
-    (defun my/block-undo (fn &rest args)
-      "Apply FN to ARGS in such a way that it can be undone in a single step."
-      (undo-boundary)
-      (with-undo-amalgamate
-        (apply fn args)))
+  ;; SEE https://github.com/oantolin/emacs-config/blob/master/my-lisp/block-undo.el
+  (defun my/block-undo (fn &rest args)
+    "Apply FN to ARGS in such a way that it can be undone in a single step."
+    (undo-boundary)
+    (with-undo-amalgamate
+      (apply fn args)))
 
-    ;; TODO wrap indent function
-    (dolist (fn '(kmacro-call-macro
-                  kmacro-exec-ring-item
-                  apply-macro-to-region-lines
-                  apheleia-format-buffer
-                  my/format))
-      (advice-add fn :around #'my/block-undo)))
-
-  )
+  ;; TODO wrap indent function
+  (dolist (fn '(kmacro-call-macro
+                kmacro-exec-ring-item
+                apply-macro-to-region-lines
+                apheleia-format-buffer
+                my/format))
+    (advice-add fn :around #'my/block-undo)))
 #+end_src
 
-*** undo-fu-session
+*** undo-fu-session                                                       :undo:
 
 #+begin_src emacs-lisp :lexical t
 (use-package undo-fu-session
@@ -3488,7 +3335,7 @@ Syntax highlighting of known Elisp symbols
         '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'")))
 #+end_src
 
-*** vundo
+*** vundo                                                                 :undo:
 
 #+begin_src emacs-lisp :lexical t
 (use-package vundo
@@ -3506,14 +3353,18 @@ Syntax highlighting of known Elisp symbols
   (defun vundo-mode-setup ()
     (and hl-line-mode (hl-line-mode 'toggle))
     (binky-margin-local-mode -1)))
+#+end_src
 
+*** undo-hl                                                               :undo:
+
+#+begin_src emacs-lisp :lexical t :tangle no
 (use-package undo-hl
-  ;; :hook ((text-mode-hook prog-mode-hook) . undo-hl-mode)
+  :hook ((text-mode-hook prog-mode-hook) . undo-hl-mode)
   :config
   (appendq! undo-hl-undo-commands '(meow-undo meow-redo))
   (setq undo-hl-flash-duration 0.15))
 #+end_src
-
+  
 *** atomic-chrome
 
 #+begin_src emacs-lisp :lexical t
@@ -3865,22 +3716,6 @@ With a prefix argument prompt for the format."
 #+begin_src emacs-lisp :lexical t
 (use-package elec-pair
   :hook (after-init-hook . electric-pair-mode))
-
-(use-package elec-pair-extra
-  :hook (after-init-hook . elec-pair-extra-setup)
-  :init
-  (setq elec-pair-extra-rules
-        '(;; enable <> auto pair for generics<T> in typescript, disable pair
-          ;; when following a space
-          ;; (typescript-ts-mode
-          ;;  :pair ((?\< . ?\>))
-          ;;  :inhibit ((?\< . " <")))
-          ;; disable pair <> in HTML+JS submode in mhtml-mode
-          (mhtml-mode
-           :pair nil
-           :inhibit ((?\< . (lambda (c)
-                              (and (eq major-mode 'js-mode)
-                                   (= c ?<)))))))))
 #+end_src
 
 *** isolate                                                          :edit:pair:
@@ -4227,7 +4062,6 @@ With a prefix argument prompt for the format."
 
 #+begin_src emacs-lisp :lexical t
 
-
 ;; TODO display use ctable tabulist ?
 (cl-defmacro bench-multi (&key (times 1) forms ensure-equal raw)
   "Return Org table as a list with benchmark results for FORMS.
@@ -4475,23 +4309,6 @@ Or create a new one in other window."
   )
 #+end_src
 
-*** nodejs-repl                                                      :shell:dev:
-
-#+begin_src emacs-lisp :lexical t
-(use-package nodejs-repl
-  :bind
-  (:map nodejs-repl-mode-map
-   ("C-l" . comint-clear-buffer))
-  :init
-  (defun nodejs-repl-send-region-or-buffer ()
-    "docstring"
-    (interactive)
-    (nodejs-repl)
-    (if (use-region-p)
-        (nodejs-repl-send-region (region-beginning) (region-end))
-      (nodejs-repl-send-region (point-min)(point-max)))))
-#+end_src
-
 *** quickrun                                                         :shell:dev:
 
 #+begin_src emacs-lisp :lexical t
@@ -4569,12 +4386,6 @@ If CN is non-nil, search in zh-CN documentation."
                                 "gh api --jq '.[].name' /repos/Fechin/reference/contents/source/_posts"))))
                     nil t)))
     (browse-url (concat "https://cheatsheets.zip/" (if cn (concat "zh-CN/docs/" ref ".html") ref)))))
-#+end_src
-
-*** testrun
-
-#+begin_src emacs-lisp :lexical t
-(use-package testrun)
 #+end_src
 
 *** flymake
@@ -5041,6 +4852,135 @@ Otherwise, behave like `magit-display-buffer-traditional'."
        #'find-file))))
 #+end_src
 
+*** lsp-bridge
+
+install: ~pthon3 -m pip install epc orjson sexpdata six paramiko ruff packaging~
+
+#+begin_src emacs-lisp :lexical t
+(use-package lsp-bridge
+  :hook (after-init-hook . global-lsp-bridge-mode)
+  :bind
+  ("M-d" . lsp-bridge-doc-toggle)
+  :init
+  ;; Setup language
+  (setq lsp-bridge-enable-org-babel t)
+  (setq lsp-bridge-python-command "python3")
+  (setq lsp-bridge-python-multi-lsp-server "basedpyright_ruff")
+  (setq lsp-bridge-lua-lsp-server "sumneko")
+  (setq lsp-bridge-c-lsp-server "clangd")
+
+  (setq lsp-bridge-enable-inlay-hint t)
+  (setq lsp-bridge-enable-completion-in-string t)
+  ;; (setq lsp-bridge-completion-in-string-file-types '("vue" "dart"))
+
+  ;; (setq lsp-bridge-completion-popup-predicates nil)
+  ;; ;; Debug
+  ;; (setq lsp-bridge-enable-log t)
+  ;; (setq lsp-bridge-enable-debug t)
+
+  (defun lsp-bridge-doc-toggle ()
+    (interactive)
+    (if (acm-frame-visible-p lsp-bridge-popup-documentation-frame)
+        (acm-hide)
+      (lsp-bridge-popup-documentation)))
+
+  :config
+  (my/load-features 'init-bridge-detect)
+
+  ;; Setup server
+  (setq lsp-bridge-user-langserver-dir
+        (expand-file-name "lsp-bridge/single" my/dir-etc))
+  (setq lsp-bridge-user-multiserver-dir
+        (expand-file-name "lsp-bridge/multi" my/dir-etc))
+
+  (setq lsp-bridge-enable-diagnostics t
+        lsp-bridge-disable-backup nil)
+
+  (appendq! lsp-bridge-default-mode-hooks
+            '(snippet-mode-hook
+              git-commit-mode-hook
+              mhtml-mode-hook
+              html-mode-hook
+              lua-ts-mode-hook
+              astro-ts-mode-hook
+              js-json-mode-hook
+              moonbit-mode-hook))
+
+  ;; FIXME can not detect frame switch between gui and tui, leads to crash.
+  (use-package acm
+    :bind
+    (:map acm-mode-map
+     ("C-j" . nil)
+     ("C-k" . nil)
+     ;; ("C-;" . acm-switch-templates)
+     )
+    :init
+    (setq acm-enable-quick-access nil
+          acm-enable-tabnine nil
+          acm-enable-doc nil)
+    (setq acm-candidate-match-function 'orderless-flex)
+    ;; yasnippet
+    (setq acm-completion-backend-merge-order
+          '("template-first-part-candidates"
+            "template-second-part-candidates"
+            "mode-first-part-candidates"
+            "mode-second-part-candidates"))
+    (setq acm-backend-yas-candidates-number 3
+          acm-backend-yas-match-by-trigger-keyword t
+          acm-backend-yas-show-trigger-keyword " [%s]")
+
+    :config
+
+    ;; (require 'acm-backend-lsp-workspace-symbol)
+    ;; (setq acm-enable-lsp-workspace-symbol t)
+
+    ;; enable acm cycle style
+    (defun ad/acm-select-prev ()
+      (interactive)
+      (acm-menu-update
+       (cond ((> acm-menu-index 0)
+              (setq-local acm-menu-index (1- acm-menu-index)))
+             ((> acm-menu-offset 0)
+              (setq-local acm-menu-offset (1- acm-menu-offset)))
+             (t (call-interactively #'acm-select-last)))))
+    (advice-add 'acm-select-prev :override #'ad/acm-select-prev)
+
+    (defun ad/acm-select-next ()
+      (interactive)
+      (acm-menu-update
+       (cond ((< acm-menu-index (1- (length acm-menu-candidates)))
+              (setq-local acm-menu-index (1+ acm-menu-index)))
+             ((< (+ acm-menu-offset acm-menu-index) (1- (length acm-candidates)))
+              (setq-local acm-menu-offset (1+ acm-menu-offset)))
+             (t (call-interactively #'acm-select-first)))))
+    (advice-add 'acm-select-next :override #'ad/acm-select-next)
+
+    ;; ;; TODO write a acm-switch-template
+    ;; (defun acm-switch-templates ()
+    ;;   "docstring"
+    ;;   (interactive))
+
+    ;; FIXME wrapper of `lsp-bridge-toggle-sdcv-helper'
+    (defun acm-sdcv-toggle ()
+      "docstring"
+      (interactive)
+      (let ((inhibit-message t))
+        (lsp-bridge-toggle-sdcv-helper)
+        (acm-update)
+        (acm-menu-update)))
+
+    (defun ad/acm-doc-toggle ()
+      (interactive)
+      (if (acm-frame-visible-p acm-doc-frame)
+          (progn
+            (acm-doc-hide)
+            (setq acm-enable-doc nil))
+        (setq acm-enable-doc t)
+        (acm-doc-try-show)))
+    (advice-add 'acm-doc-toggle :override #'ad/acm-doc-toggle))
+  )
+#+end_src
+
 *** treesit                                                            :treesit:
 
 #+begin_src emacs-lisp :lexical t
@@ -5084,10 +5024,22 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 *** built-in langs
 
 #+begin_src emacs-lisp :lexical t
+(use-package css-mode
+  :init
+  (setq css-indent-offset 2)
+  (setq css-fontify-colors nil))
+
 (use-package sh-script
   :init
   (setq sh-basic-offset 2
         sh-shell-file (executable-find "bash")))
+
+(use-package js
+  :mode "\\.[mc]js\\'"
+  :init
+  (setq js-indent-level 2
+        js-chain-indent t
+        js-jsx-indent-level 2))
 
 (use-package conf-mode
   :mode ("\\.\\(ini\\|conf\\)\\'" "enchant.ordering"
@@ -5133,8 +5085,38 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
 #+begin_src emacs-lisp :lexical t
 
-(use-package swift-ts-mode
-  :mode "\\.swift\\'")
+(use-package typescript-ts-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-ts-mode-hook . typescript-ts-mode-setup)
+  :init
+  (defun typescript-ts-mode-setup ()
+    (add-hook 'post-self-insert-hook #'ah/typescript-generics-angle-pair nil t)))
+
+(use-package web-mode
+  ;; :hook (web-mode-hook . web-mode-setup)
+  :mode "\\.\\(htm\\|html\\|phtml\\|php|[gj]sp\\|as[cp]x\\|erb\\|djhtml\\|hbs\\|ejs\\|jade\\|swig\\|tm?pl\\)$"
+  :init
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-part-padding 2
+        ;; web-mode-enable-auto-closing nil
+        ;; web-mode-enable-auto-opening nil
+        web-mode-enable-auto-pairing nil
+        web-mode-enable-auto-quoting t
+        ;; web-mode-enable-auto-expanding nil
+        ;; web-mode-enable-auto-indentation nil
+        web-mode-enable-current-element-highlight t
+        ;; web-mode-enable-current-column-highlight nil
+        ;; web-mode-enable-block-face t
+        ;; web-mode-enable-part-face t
+        ;; web-mode-enable-inlays t
+        ;; web-mode-enable-sql-detection t
+        ;; web-mode-enable-front-matter-block t
+        ;; web-mode-enable-element-content-fontification nil
+        ;; web-mode-enable-element-tag-fontification nil
+        web-mode-enable-html-entities-fontification t)
+  )
 
 (use-package jq-ts-mode)
 
@@ -5145,15 +5127,6 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
 (use-package zig-ts-mode
   :mode "\\.zig\\'")
-
-(use-package dart-ts-mode)
-
-(use-package typst-ts-mode
-  :init
-  (setq typst-ts-mode-watch-options "--open"))
-
-(use-package astro-ts-mode
-  :mode "\\.astro\\'")
 
 (use-package moonbit-mode
   :mode "\\.mbt\\'")
@@ -5171,11 +5144,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
 (use-package pip-requirements)
 
-(use-package nushell-ts-mode)
-
 (use-package adoc-mode)
-
-(use-package clojure-ts-mode)
 #+end_src
 
 *** elisp
@@ -5295,6 +5264,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 #+end_src
 
 *** python
+
 #+begin_src emacs-lisp :lexical t
 (use-package python
   :mode ("\\.pythonrc\\'" . python-ts-mode)
@@ -5303,217 +5273,43 @@ Otherwise, behave like `magit-display-buffer-traditional'."
    ("C-l" . comint-clear-buffer)))
 #+end_src
 
-*** css                                                                    :web:
-
-#+begin_src emacs-lisp :lexical t
-(use-package css-mode
-  :init
-  (setq css-indent-offset 2)
-  (setq css-fontify-colors nil))
-
-;; ;; SCSS mode
-;; (use-package scss-mode
-;;   :init (setq scss-compile-at-save nil))
-
-;; (use-package less-css-mode
-;;   :init (setq less-css-compile-at-save nil))
-#+end_src
-
-*** tailwindcss                                                            :web:
-
-#+begin_src emacs-lisp :lexical t
-;; TODO tailwind color completion font-awesome completion or to write a consult-fontawesome command
-;; SEE https://github.com/FortAwesome/Font-Awesome/blob/6.x/metadata/icons.json
-(defvar tailwindcss-frameworks
-  '("nextjs" "laravel" "vite" "nuxtjs" "gatsby" "solidjs" "sveltekit" "angular"
-    "ruby-on-rails" "remix" "phoenix" "parcel" "symfony" "meteor" "create-react-app"
-    "adonisjs" "emberjs" "astro" "qwik" "rspack")
-  "List of available frameworks supported by tailwindcss.")
-
-(defun tailwindcss-framework-setup (framework)
-  "Browser instructions for FRAMEWORK to use tailwindcss."
-  (interactive
-   (list (completing-read "Select framework: " tailwindcss-frameworks nil t)))
-  (browse-url (format "https://tailwindcss.com/docs/guides/%s"
-                      (url-hexify-string framework))))
-#+end_src
-
-*** transform
-
-#+begin_src emacs-lisp :lexical t
-;; TODO write a plugin for transform.tools
-(defvar transform-tools-options
-  '("svg-to-jsx" "svg-to-react-native" "html-to-jsx" "html-to-pug" "json-to-proptypes"
-    "json-to-flow" "json-to-graphql" "json-to-typescript" "json-to-mobx-state-tree"
-    "json-to-sarcastic" "json-to-io-ts" "json-to-rust-serde" "json-to-mongoose"
-    "json-to-big-query" "json-to-mysql" "json-to-scala-case-class" "json-to-go"
-    "json-to-go-bson" "json-to-yaml" "json-to-jsdoc" "json-to-kotlin" "json-to-java"
-    "json-to-json-schema" "json-to-toml" "json-to-zod" "json-schema-to-typescript"
-    "json-schema-to-openapi-schema" "json-schema-to-protobuf" "json-schema-to-zod"
-    "css-to-js" "object-styles-to-template-literal" "css-to-tailwind" "js-object-to-json"
-    "js-object-to-typescript" "graphql-to-typescript" "graphql-to-flow" "graphql-to-java"
-    "graphql-to-resolvers-signature" "graphql-to-introspection-json" "graphql-to-schema-ast"
-    "graphql-to-fragment-matcher" "graphql-to-components" "graphql-to-typescript-mongodb"
-    "jsonld-to-nquads" "jsonld-to-expanded" "jsonld-to-compacted" "jsonld-to-flattened"
-    "jsonld-to-framed" "jsonld-to-normalized" "typescript-to-flow" "typescript-to-typescript-declaration"
-    "typescript-to-json-schema" "typescript-to-javascript" "typescript-to-zod" "flow-to-typescript"
-    "flow-to-typescript-declaration" "flow-to-javascript" "xml-to-json" "yaml-to-json" "yaml-to-toml"
-    "markdown-to-html" "toml-to-json" "toml-to-yaml" "cadence-to-go")
-  "List of available options supported by transform.tools.")
-
-(defun transform-tools-search (option)
-  "Browser transform page for OPTION in transform.tools."
-  (interactive
-   (list (completing-read "Select option " transform-tools-options nil t)))
-  (when (use-region-p)
-    (simpleclip-set-contents
-     (substring-no-properties
-      (filter-buffer-substring (region-beginning) (region-end)))))
-  (browse-url (format "https://transform.tools/%s" (url-hexify-string option))))
-#+end_src
-
-*** impatient-mode                                                         :web:
-
-#+begin_src emacs-lisp :lexical t
-(use-package impatient-mode
-  :commands imp-visit-buffer
-  :init
-  (defun html-anchor-local-files ()
-    "Return a list of local files which is anchord to current html buffer."
-    (let (files)
-      (save-excursion
-        (save-match-data
-          (goto-char (point-min))
-          (while (re-search-forward
-                  "<\\(link\\|script\\)[^>]+\\(href\\|src\\)=[\"']\\([^\"']+\\(\\.css\\|\\.js\\)\\)[\"']" nil t)
-            (let* ((file (expand-file-name (match-string 3))))
-              (when (file-exists-p file)
-                (push file files))))))
-      (reverse files)))
-
-  (defun impatient--anchored-on-change (anchor-buf html-buf)
-    (when (and (buffer-live-p anchor-buf)
-               (buffer-modified-p anchor-buf)
-               (buffer-live-p html-buf)
-               (buffer-local-value 'impatient-mode html-buf))
-      (with-current-buffer anchor-buf
-        (basic-save-buffer))
-      (with-current-buffer html-buf
-        (imp--update-buffer))))
-
-  (defun impatient-watch-anchored-files ()
-    "Watch buffer changes of anchord files in current html buffer if impatient enabled."
-    (interactive)
-    (let ((html-buf (current-buffer)))
-      (when impatient-mode
-        (dolist (f (html-anchor-local-files))
-          (let ((anchor-buf (or (get-file-buffer f) (find-file-noselect f))))
-            (with-current-buffer anchor-buf
-              (setq-local impatient-anchored-timer
-                          (run-with-idle-timer
-                           2
-                           :repeat
-                           #'impatient--anchored-on-change
-                           anchor-buf
-                           html-buf))
-              (add-hook 'kill-buffer-hook
-                        (lambda ()
-                          (when (timerp impatient-anchored-timer)
-                            (cancel-timer impatient-anchored-timer)))
-                        nil t)))))))
-
-  )
-#+end_src
-
-*** html                                                                   :web:
-
-#+begin_src emacs-lisp :lexical t
-(use-package web-mode
-  ;; :hook (web-mode-hook . web-mode-setup)
-  :mode "\\.\\(htm\\|html\\|phtml\\|php|[gj]sp\\|as[cp]x\\|erb\\|djhtml\\|hbs\\|ejs\\|jade\\|swig\\|tm?pl\\)$"
-  :init
-  (setq web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2
-        web-mode-part-padding 2
-        ;; web-mode-enable-auto-closing nil
-        ;; web-mode-enable-auto-opening nil
-        web-mode-enable-auto-pairing nil
-        web-mode-enable-auto-quoting t
-        ;; web-mode-enable-auto-expanding nil
-        ;; web-mode-enable-auto-indentation nil
-        web-mode-enable-current-element-highlight t
-        ;; web-mode-enable-current-column-highlight nil
-        ;; web-mode-enable-block-face t
-        ;; web-mode-enable-part-face t
-        ;; web-mode-enable-inlays t
-        ;; web-mode-enable-sql-detection t
-        ;; web-mode-enable-front-matter-block t
-        ;; web-mode-enable-element-content-fontification nil
-        ;; web-mode-enable-element-tag-fontification nil
-        web-mode-enable-html-entities-fontification t)
-  )
-#+end_src
-
-*** js
-#+begin_src emacs-lisp :lexical t
-(use-package js
-  :mode "\\.[mc]js\\'"
-  :init
-  (setq js-indent-level 2
-        js-chain-indent t
-        js-jsx-indent-level 2))
-#+end_src
-
-*** ts
-
-#+begin_src emacs-lisp :lexical t
-;; NOTE support generics <> with ,<
-(defun ah/typescript-generics-angle-pair ()
-  (when (and (eql last-command-event ?<) (looking-back ",<" 1))
-    (backward-delete-char 2)
-    (insert "<>")
-    (backward-char)))
-
-(use-package typescript-ts-mode
-  :mode "\\.ts\\'"
-  :hook (typescript-ts-mode-hook . typescript-ts-mode-setup)
-  :init
-  (defun typescript-ts-mode-setup ()
-    (add-hook 'post-self-insert-hook #'ah/typescript-generics-angle-pair nil t)))
-#+end_src
-
-*** vue                                                                    :web:
-#+begin_src emacs-lisp :lexical t
-(add-to-list 'auto-mode-alist '("\\.vue\\'" . web-vue-mode))
-(define-derived-mode web-vue-mode web-mode "wVue"
-  "Major mode for editing VUE files."
-  ;; NOTE do not fontification
-  (setq-local web-mode-enable-html-entities-fontification t)
-  (setq-local web-mode-enable-element-content-fontification nil)
-  (setq-local web-mode-enable-element-tag-fontification nil)
-  )
-
-;; Setup lsp
-(with-eval-after-load 'lsp-bridge
-  (add-to-list 'lsp-bridge-default-mode-hooks 'web-vue-mode-hook))
-
-;; Setup tsdk path in volar.json
-(defun tsdk-path-detect ()
-  (let ((bin-path (string-trim (shell-command-to-string "command -v tsc"))))
-    (string-replace "bin/tsc" "lib/node_modules/typescript/lib" bin-path)))
-
-#+end_src
-
-*** write
+*** focus
 
 #+begin_src emacs-lisp :lexical t
 (use-package focus)
+#+end_src
 
+*** olivetti
+
+#+begin_src emacs-lisp :lexical t
 (use-package olivetti
   :init
   (setq olivetti-body-width nil
         olivetti-style t))
+#+end_src
+
+*** logos
+
+#+begin_src emacs-lisp :lexical t
+(use-package logos
+  :init
+  (setq logos-hide-cursor t
+        logos-hide-mode-line t
+        logos-hide-header-line t
+        logos-scroll-lock t
+        logos-hide-buffer-boundaries t
+        logos-buffer-read-only t
+        logos-olivetti t
+        logos-hide-fringe nil))
+#+end_src
+
+#+begin_src emacs-lisp :lexical t
+(defun autocorrect-fix ()
+  "Fix cjk formats error with `auto-correct'."
+  (interactive)
+  (when-let* (((executable-find "autocorrect"))
+              (file (buffer-file-name)))
+    (shell-command (format "autocorrect --fix %s" (shell-quote-argument file)))))
 #+end_src
 
 *** markdown
@@ -5577,9 +5373,9 @@ Otherwise, behave like `magit-display-buffer-traditional'."
         org-fold-catch-invisible-edits 'smart
         org-startup-indented nil
         org-startup-folded 'overview
-        org-ellipsis " +"
+        org-ellipsis " ▾"
         org-pretty-entities t
-        org-hide-emphasis-markers t)
+        org-hide-emphasis-markers nil)
 
   ;; (setq org-archive-location )
   :config
@@ -5633,88 +5429,34 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
 *** org-modern                                                             :org:
 
-#+begin_src emacs-lisp :lexical t :tangle no
+#+begin_src emacs-lisp :lexical t
 (use-package org-modern
   :hook ((org-mode-hook . org-modern-mode)
          (org-agenda-finalize-hook . org-modern-agenda)
-         (org-modern-mode-hook . org-modern-setup))
+         ;; (org-modern-mode-hook . org-modern-setup)
+         )
   :init
   (setq org-modern-star 'replace
-        org-modern-hide-stars 'leading
-        org-modern-table nil)
-  (defun org-modern-setup ()
-    "Adapt `org-modern-mode'."
-    ;; Disable Prettify Symbols
-    (setq prettify-symbols-alist nil)
-    (prettify-symbols-mode -1)))
+        org-modern-tag nil
+        org-modern-replace-stars "❶❷❸❹❺❻❼❽❾")
+  (setq org-modern-list
+        '((?* . "⭑")
+          (?+ . "◼")
+          (?- . "⬥")))
+
+  ;; (defun org-modern-setup ()
+  ;;   "Adapt `org-modern-mode'."
+  ;;   ;; Disable Prettify Symbols
+  ;;   ;; (setq prettify-symbols-alist nil)
+  ;;   (prettify-symbols-mode 1))
+  )
 #+end_src
 
 *** denote
 
-#+begin_src emacs-lisp :lexical t :tangle no
+#+begin_src emacs-lisp :lexical t
 (use-package denote
-  :init
-  ;; (setq denote-file-type 'markdown-yaml)
-  (setq denote-known-keywords '("emacs" "javascript" "typescript"
-                                "react" "vue" "coding" "web"))
-  (setq denote-file-name-letter-casing '((title . verbatim) (t . downcase)))
-  :config
-  (use-package denote-silo-extras
-    :init
-    (setq denote-silo-extras-directories `(,denote-directory))))
-
-(use-package denote-rename-buffer
-  :hook (after-init-hook . denote-rename-buffer-mode)
-  :init
-  ;; show denote buffer in title.ext style
-  (defun denote-rename-buffer-with-ext (&optional buffer)
-    "Rename current buffer or optional BUFFER with denote title and extension."
-    (require 'denote)
-    (when-let* ((file (buffer-file-name (or buffer (current-buffer))))
-                ((denote-file-has-identifier-p file))
-                (ext (denote-get-file-extension file))
-                ((string-match denote-title-regexp file))
-                (new-name (concat (match-string 1 file) ext)))
-      (rename-buffer new-name :unique)))
-  (setq denote-rename-buffer-function #'denote-rename-buffer-with-ext))
-
-(use-package denote-menu
-  :config
-  (transient-define-prefix denote-dispatch ()
-    "denote commands"
-    ["Create"
-     ("cc" "Default" denote)
-     ("cr" "With region" denote-region)
-     ("ct" "With template" denote-template)
-     ("cn" "With subdirectory" denote-subdirectory)
-     ("cy" "With type" denote-type)
-     ("cd" "With date" denote-date)
-     ("cs" "With signature" denote-signature)]
-    ["Update"
-     ("ur" "Rename file" denote-rename-file)
-     ("uf" "Rename file with front matter" denote-rename-file-using-front-matter)
-     ("uk" "Add keyword" denote-keywords-add)
-     ("ud" "Remove keyword" denote-keywords-remove)
-     ("ua" "Add front matter" denote-add-front-matter)
-     ("uc" "Change type and front matter" denote-change-file-type-and-front-matter)]
-    ["Link"
-     ("lc" "Create link" denote-link)
-     ("la" "Add links" denote-add-links)
-     ("lf" "Find link" denote-find-link)
-     ("lb" "Backlinks" denote-backlinks)
-     ("ls" "Find backlink" denote-find-backlink)]
-    ["Silo"
-     ("sc" "Create" denote-silo-extras-create-note)
-     ("so" "Open or create" denote-silo-extras-open-or-create)
-     ("sr" "Run command" denote-silo-extras-select-silo-then-command)]
-    ["Menu"
-     ("ml" "List notes" denote-menu-list-notes)
-     ("mf" "Filter notes" denote-menu-filter)
-     ("mk" "Filter notes by keyword" denote-menu-filter-by-keyword)
-     ("mK" "Exclude notes by keyword" denote-menu-filter-out-keyword)
-     ("mc" "Clear filters" denote-menu-clear-filters)
-     ("me" "Export to dired" denote-menu-export-to-dired)]
-    ))
+  :demand t)
 #+end_src
 
 *** keybinding
@@ -5779,11 +5521,11 @@ The DWIM behaviour of this command is as follows:
   "R" #'quickrun-shell
   "f" #'my/format
   ;; test
-  "c" #'testrun-nearest
-  "n" #'testrun-namespace
-  "b" #'testrun-file
-  "a" #'testrun-all
-  "l" #'testrun-last
+  ;; "c" #'testrun-nearest
+  ;; "n" #'testrun-namespace
+  ;; "b" #'testrun-file
+  ;; "a" #'testrun-all
+  ;; "l" #'testrun-last
   ;; doc
   "h" #'devdocs-at-point
   "H" #'helpful-at-point
@@ -5899,22 +5641,10 @@ The DWIM behaviour of this command is as follows:
   )
 #+end_src
 
-*** emigo
-
-#+begin_src emacs-lisp :lexical t
-(use-package emigo
-  :config
-  (emigo-enable)
-  (setq emigo-model "openrouter/deepseek/deepseek-chat-v3-0324")
-  ;; (setq emigo-model "openrouter/google/gemini-2.5-pro-exp-03-25:free")
-  (setq emigo-base-url "https://openrouter.ai/api/v1")
-  (setq emigo-api-key openrouter-api-key)
-  (setq emigo-window-width 80))
-#+end_src
-
 ** init end
 
 #+begin_src emacs-lisp :lexical t
 ;; TODO write magika.el to identify file content with magika cmd
 ;;; init.el ends here
 #+end_src
+
