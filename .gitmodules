@@ -79,6 +79,9 @@
 [submodule "deferred"]
 	path = lib/deferred
 	url = https://github.com/kiwanami/emacs-deferred
+[submodule "denote"]
+	path = lib/denote
+	url = https://github.com/protesilaos/denote
 [submodule "diff-hl"]
 	path = lib/diff-hl
 	url = https://github.com/dgutov/diff-hl
@@ -354,9 +357,6 @@
 [submodule "org-modern"]
 	path = lib/org-modern
 	url = https://github.com/minad/org-modern
-[submodule "org-roam"]
-	path = lib/org-roam
-	url = https://github.com/org-roam/org-roam
 [submodule "ox-gfm"]
 	path = lib/ox-gfm
 	url = https://github.com/larstvei/ox-gfm
