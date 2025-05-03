@@ -2511,43 +2511,24 @@ A prefix argument means to unmark them instead."
 #+begin_src emacs-lisp :lexical t
 (use-package embark
   :after vertico
+  :bind
+  (("M-l" . embark-act)
+   :map embark-general-map
+   ("C-c C-a" . marginalia-cycle)
+   :map vertico-map
+   ("C-l" . embark-act)
+   ("C-c C-o" . embark-export)
+   ("C-c C-a" . marginalia-cycle)
+   :map embark-expression-map
+   ("M" . pp-macroexpand-all-expression)
+   :map embark-library-map
+   ("o" . find-library-other-window)
+   :map embark-identifier-map
+   ("d" . lsp-bridge-find-def-other-window))
+
   :init
   (setq embark-prompter 'embark-keymap-prompter
         embark-mixed-indicator-delay 0.6)
-
-  (setq embark-indicators
-        '(embark-mixed-which-key-indicator
-          embark-highlight-indicator
-          embark-isearch-highlight-indicator))
-
-  ;; HACK use delayed which-key to display embark
-  (defun embark-mixed-which-key-indicator ()
-    "Mixed indicator showing keymap and targets.
-The indicator shows the `embark-minimal-indicator' by default.
-After `embark-mixed-indicator-delay' seconds, the
-`embark-which-key-indicator' is shown."
-    (let* ((windicator (embark-which-key-indicator))
-           (mindicator (embark-minimal-indicator))
-           windicator-active
-           wtimer)
-      (lambda (&optional keymap targets prefix)
-        (when wtimer
-          (cancel-timer wtimer)
-          (setq wtimer nil))
-        (if (not keymap)
-            (progn
-              (funcall windicator)
-              (when mindicator (funcall mindicator)))
-          (when mindicator
-            (funcall mindicator keymap targets prefix))
-          (if windicator-active
-              (funcall windicator keymap targets prefix)
-            (setq wtimer
-                  (run-at-time
-                   embark-mixed-indicator-delay nil
-                   (lambda ()
-                     (setq windicator-active t)
-                     (funcall windicator keymap targets prefix)))))))))
 
   (defun embark-which-key-indicator ()
     "An embark indicator that displays keymaps using which-key.
@@ -2571,21 +2552,7 @@ targets."
            keymap)
          nil nil t (lambda (binding)
                      (not (string-suffix-p "-argument" (cdr binding))))))))
-
-  :bind
-  (("M-l" . embark-act)
-   :map embark-general-map
-   ("C-c C-a" . marginalia-cycle)
-   :map vertico-map
-   ("C-l" . embark-act)
-   ("C-c C-o" . embark-export)
-   ("C-c C-a" . marginalia-cycle)
-   :map embark-expression-map
-   ("M" . pp-macroexpand-all-expression)
-   :map embark-library-map
-   ("o" . find-library-other-window)
-   :map embark-identifier-map
-   ("d" . lsp-bridge-find-def-other-window))
+  (advice-add 'embark-verbose-indicator :override 'embark-which-key-indicator)
 
   :config
 
