@@ -5288,8 +5288,9 @@ install: ~pthon3 -m pip install epc orjson sexpdata six paramiko ruff packaging~
         olivetti-style t))
 #+end_src
 
-*** logos
+*** TODO logos
 
+to define a org presentation like in system craft
 #+begin_src emacs-lisp :lexical t
 (use-package logos
   :init
