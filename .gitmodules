@@ -405,8 +405,6 @@
 [submodule "quickrun"]
 	path = lib/quickrun
 	url = https://github.com/emacsorphanage/quickrun
-	remote = "eki3z https://github.com/eki3z/quickrun"
-	branch = fix-bugs
 [submodule "rainbow-delimiters"]
 	path = lib/rainbow-delimiters
 	url = https://github.com/Fanael/rainbow-delimiters
