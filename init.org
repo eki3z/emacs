@@ -2150,7 +2150,8 @@ A prefix argument means to unmark them instead."
   :init
   (setq vertico-cycle t
         vertico-count 20
-        resize-mini-windows t)
+        resize-mini-windows t
+        vertico-sort-function 'vertico-sort-history-length-alpha)
   :bind
   (("C-c C-r" . vertico-repeat)
    (:map vertico-map
@@ -2158,13 +2159,12 @@ A prefix argument means to unmark them instead."
     ("DEL" . vertico-directory-delete-char)))
 
   :config
+  (require 'vertico-sort)
 
-  (use-package vertico-multiform
-    :demand t
-    :config
-    (add-to-list 'vertico-multiform-categories
-                 '(jinx grid (vertico-grid-annotate . 20)))
-    (vertico-multiform-mode 1))
+  (require 'vertico-multiform)
+  (add-to-list 'vertico-multiform-categories
+               '(jinx grid (vertico-grid-annotate . 20)))
+  (vertico-multiform-mode 1)
 
   ;; SEE https://github.com/minad/vertico/wiki#prefix-current-candidate-with-arrow
   (defun ad/vertico-customize-candidate (orig cand prefix suffix index _start)
@@ -2225,13 +2225,13 @@ A prefix argument means to unmark them instead."
           (variable (styles my/orderless-mix))
           (symbol   (styles my/orderless-mix))))
 
-  (with-eval-after-load 'consult
-    (defun consult--orderless-regexp-compiler (input type &rest _config)
-      (let ((input (orderless-pattern-compiler input)))
-        (cons
-         (mapcar (lambda (r) (consult--convert-regexp r type)) input)
-         (lambda (str) (orderless--highlight input t str)))))
-    (setq consult--regexp-compiler #'consult--orderless-regexp-compiler))
+  ;; (with-eval-after-load 'consult
+  ;;   (defun consult--orderless-regexp-compiler (input type &rest _config)
+  ;;     (setq input (cdr (orderless-compile input)))
+  ;;     (cons
+  ;;      (mapcar (lambda (r) (consult--convert-regexp r type)) input)
+  ;;      (lambda (str) (orderless--highlight input t str))))
+  ;;   (setq consult--regexp-compiler #'consult--orderless-regexp-compiler))
 
   (with-eval-after-load 'pinyinlib
     (defun ad/orderless-regexp-pinyin (args)
