@@ -5605,14 +5605,16 @@ to define a org presentation like in system craft
            "*  %^{Title} %?\n%U\n%a\n")
           ("t" "Todo" entry (file ,(concat org-directory "/gtd.org"))
            "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-          ("n" "Note" entry (file ,(concat org-directory "/note.org"))
-           "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-          ("j" "Journal" entry (file+olp+datetree
-                                ,(concat org-directory "/journal.org"))
-           "*  %^{Title} %?\n%U\n%a\n" :clock-in t :clock-resume t)
+          ;; ("n" "Note" entry (file ,(concat org-directory "/note.org"))
+          ;;  "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+          ;; ("j" "Journal" entry (file+olp+datetree
+          ;;                       ,(concat org-directory "/journal.org"))
+          ;;  "*  %^{Title} %?\n%U\n%a\n" :clock-in t :clock-resume t)
           ("b" "Book" entry (file+olp+datetree
                              ,(concat org-directory "/book.org"))
-           "* Topic: %^{Description}  %^g %? Added: %U"))))
+           "* Topic: %^{Description}  %^g %? Added: %U")
+          ("d" "Diary" item (file+olp+datetree ,(concat org-directory "/diary.org"))
+           "- %i%?" :time-prompt t :immediate-finish t :empty-lines 1))))
 #+end_src
 
 *** ox-gfm                                                                 :org:
