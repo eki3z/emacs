@@ -464,6 +464,9 @@
 [submodule "terminal-focus-reporting"]
 	path = lib/terminal-focus-reporting
 	url = https://github.com/emacsattic/terminal-focus-reporting
+[submodule "transient"]
+	path = lib/transient
+	url = https://github.com/magit/transient
 [submodule "transient-showcase"]
 	path = lib/transient-showcase
 	url = https://github.com/positron-solutions/transient-showcase.git
