@@ -3331,7 +3331,7 @@ Syntax highlighting of known Elisp symbols
   (appendq! undo-hl-undo-commands '(meow-undo meow-redo))
   (setq undo-hl-flash-duration 0.15))
 #+end_src
-  
+
 *** atomic-chrome
 
 #+begin_src emacs-lisp :lexical t
@@ -4538,9 +4538,9 @@ If CN is non-nil, search in zh-CN documentation."
   (:map transient-map
    ("ESC" . transient-quit-one)
    ("<escape>" . transient-quit-one))
-  ;;   ;; NOTE unload builtin transient if needed
-  ;; :preface
-  ;; (unload-feature 'transient t)
+  ;; NOTE unload builtin transient if needed
+  :preface
+  (unload-feature 'transient t)
   :init
   (setq transient-highlight-mismatched-keys nil
         transient-detect-key-conflicts t)
