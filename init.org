@@ -736,6 +736,15 @@ Same as `replace-string C-q C-m RET RET'."
                 "\n")
         (setq i (- i 96))))))
 
+;; stock deviation
+(defun stock-5p (price)
+  (let (lst)
+    (dolist (l (number-sequence -5 5 0.5))
+      (and (zerop l) (push "+++++++++++" lst))
+      (push (format "%+4.1f%%  %.2f" l (/ (* (+ 100 l) price) 100)) lst)
+      (and (zerop l) (push "-----------" lst)))
+    (string-join lst "\n")))
+
 
 (defun temp-log (msg)
   (with-current-buffer (get-buffer-create " *temp-log*")
