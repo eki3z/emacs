@@ -745,6 +745,11 @@ Same as `replace-string C-q C-m RET RET'."
       (and (zerop l) (push "-----------" lst)))
     (string-join lst "\n")))
 
+(defun org-diary-template-for-stock ()
+  (if-let* ((lst stocks-in-hand))
+      (mapconcat (lambda (s) (format "**** %s\n- 预测:\n- 对策:\n- 结果:\n" s)) lst "\n")
+    "- "))
+
 
 (defun temp-log (msg)
   (with-current-buffer (get-buffer-create " *temp-log*")
@@ -5622,8 +5627,11 @@ to define a org presentation like in system craft
           ("b" "Book" entry (file+olp+datetree
                              ,(concat org-directory "/book.org"))
            "* Topic: %^{Description}  %^g %? Added: %U")
-          ("d" "Diary" item (file+olp+datetree ,(concat org-directory "/diary.org"))
-           "- %i%?" :time-prompt t :immediate-finish t :empty-lines 1))))
+          ("d" "Diary" entry (file+olp+datetree ,(concat org-directory "/diary.org"))
+           (function org-diary-template-for-stock)
+           :time-prompt t
+           :immediate-finish t
+           :empty-lines-after 1))))
 #+end_src
 
 *** ox-gfm                                                                 :org:
