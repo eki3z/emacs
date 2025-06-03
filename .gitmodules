@@ -205,6 +205,9 @@
 [submodule "handlebars-mode"]
 	path = lib/handlebars-mode
 	url = https://github.com/danielevans/handlebars-mode
+[submodule "haskell-ts-mode"]
+	path = lib/haskell-ts-mode
+	url = https://codeberg.org/pranshu/haskell-ts-mode
 [submodule "helpful"]
 	path = lib/helpful
 	url = https://github.com/Wilfred/helpful
