@@ -5627,7 +5627,7 @@ to define a org presentation like in system craft
           ("b" "Book" entry (file+olp+datetree
                              ,(concat org-directory "/book.org"))
            "* Topic: %^{Description}  %^g %? Added: %U")
-          ("d" "Diary" entry (file+olp+datetree ,(concat org-directory "/diary.org"))
+          ("s" "Stock" entry (file+olp+datetree ,(concat org-directory "/stock.org"))
            (function org-diary-template-for-stock)
            :time-prompt t
            :immediate-finish t
