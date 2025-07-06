@@ -4845,7 +4845,7 @@ install: ~pthon3 -m pip install epc orjson sexpdata six paramiko ruff packaging~
   :init
   ;; Setup language
   (setq lsp-bridge-enable-org-babel t)
-  (setq lsp-bridge-python-command "python3")
+  (setq lsp-bridge-python-command (expand-file-name "lsp-bridge/python-lsp-bridge" borg-drones-directory))
   (setq lsp-bridge-python-multi-lsp-server "basedpyright_ruff")
   (setq lsp-bridge-lua-lsp-server "sumneko")
   (setq lsp-bridge-c-lsp-server "clangd")
@@ -5633,7 +5633,7 @@ to define a org presentation like in system craft
           ("b" "Book" entry (file+olp+datetree
                              ,(concat org-directory "/book.org"))
            "* Topic: %^{Description}  %^g %? Added: %U")
-          ("s" "Stock" entry (file+olp+datetree ,(concat org-directory "/stock.org"))
+          ("s" "Stock" entry (file+olp+datetree ,(concat "~/Desktop/stock" "/stock.org"))
            (function org-diary-template-for-stock)
            :time-prompt t
            :immediate-finish t
@@ -5822,7 +5822,7 @@ The DWIM behaviour of this command is as follows:
 
 *** envrionment                                                            :dev:
 
-#+begin_src emacs-lisp :lexical t :tangle no
+#+begin_src emacs-lisp :lexical t :tangle yes
 ;; for npm/pnpm project
 ;; create or add path
 ;; allow envrc
