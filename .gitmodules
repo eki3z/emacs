@@ -120,6 +120,9 @@
 [submodule "elfeed-webkit"]
 	path = lib/elfeed-webkit
 	url = https://github.com/fritzgrabo/elfeed-webkit
+[submodule "elisp-autofmt"]
+	path = lib/elisp-autofmt
+	url = https://codeberg.org/ideasman42/emacs-elisp-autofmt
 [submodule "elisp-demos"]
 	path = lib/elisp-demos
 	url = https://github.com/xuchunyang/elisp-demos
