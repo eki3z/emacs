@@ -1778,9 +1778,11 @@ install icons: ~brew install font-symbols-only-nerd-font~
      '("W" . meow-mark-symbol)
 
      ;; macro
-     '("M" . kmacro-start-kmacro)
+     '("M" . kmacro-start-macro)
      '("m" . meow-end-or-call-kmacro)
-     '("Z" . meow-kmacro-lines)
+     ;; BUG performance issue
+     ;; '("Z" . meow-kmacro-lines)
+     '("Z" . apply-macro-to-region-lines)
 
      ;; thing
      '("," . meow-inner-of-thing)
