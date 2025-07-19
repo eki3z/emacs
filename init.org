@@ -4556,7 +4556,9 @@ If CN is non-nil, search in zh-CN documentation."
    ("<escape>" . transient-quit-one))
   ;; NOTE unload builtin transient if needed
   :preface
-  (unload-feature 'transient t)
+  (when (and (bound-and-true-p transient-version)
+             (string-suffix-p "-builtin" transient-version))
+    (unload-feature 'transient t))
   :init
   (setq transient-highlight-mismatched-keys nil
         transient-detect-key-conflicts t)
