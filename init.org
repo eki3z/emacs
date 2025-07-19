@@ -4451,10 +4451,11 @@ If CN is non-nil, search in zh-CN documentation."
     "Formatting current buffer."
     (interactive)
     (unless buffer-read-only
-      (pcase major-mode
-        ((or gitconfig-mode emacs-lisp-mode lisp-interaction-mode)
-         (indent-whole-buffer))
-        (_ (call-interactively #'apheleia-format-buffer)))))
+      (cond
+       ((memq major-mode '(gitconfig-mode emacs-lisp-mode lisp-interaction-mode))
+        (indent-whole-buffer))
+       (t
+        (call-interactively #'apheleia-format-buffer)))))
 
   ;; do not format if functions return non-nil
   (setq apheleia-skip-functions
