@@ -91,6 +91,9 @@
 [submodule "dir-config"]
 	path = lib/dir-config
 	url = https://github.com/jamescherti/dir-config.el
+[submodule "dired-preview"]
+	path = lib/dired-preview
+	url = https://github.com/protesilaos/dired-preview
 [submodule "diredfl"]
 	path = lib/diredfl
 	url = https://github.com/purcell/diredfl
@@ -337,7 +340,6 @@
 [submodule "nerd-icons-completion"]
 	path = lib/nerd-icons-completion
 	url = https://github.com/rainstormstudio/nerd-icons-completion
-	branch = feat/size-option
 [submodule "nerd-icons-ibuffer"]
 	path = lib/nerd-icons-ibuffer
 	url = https://github.com/seagle0128/nerd-icons-ibuffer
