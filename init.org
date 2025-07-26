@@ -1673,14 +1673,16 @@ install icons: ~brew install font-symbols-only-nerd-font~
           ;; third-party
           (no-margin  . ((diff-hl-margin-local-mode -1) (binky-margin-local-mode -1)))
           (no-paren   . ((highlight-parentheses-mode -1)))
-          (temp-motion . ((my/meow-temp-motion 1)))))
+          ;; (temp-motion . ((my/meow-temp-motion 1)))
+          ))
 
   (setq duplexer-alist
         '((olivetti-mode . (no-margin no-hl-line (focus-mode 1)))
           (redacted-mode . (no-margin no-hl-line no-paren no-cursor read-only))
           (smerge-mode   . (no-margin no-paren (save-place-local-mode -1)))))
 
-  (appendq! duplexer-fallback-alist '((my/meow-temp-motion . meow--temp-state-before))))
+  ;; (appendq! duplexer-fallback-alist '((my/meow-temp-motion . meow--temp-state-before)))
+  )
 #+end_src
 
 *** meow
@@ -1820,18 +1822,18 @@ install icons: ~brew install font-symbols-only-nerd-font~
      '("/" . meow-keypad-describe-key)
      '("?" . meow-cheatsheet)))
 
-  (defvar-local meow--temp-state-before nil)
-  (defun my/meow-temp-motion (&optional arg)
-    "Switch between meow-motion-mode and meow-normal-mode automatically."
-    (interactive "p")
-    (when (region-active-p)
-      (meow--cancel-selection))
-    (if (< arg 0)
-        (progn
-          (meow--switch-state meow--temp-state-before)
-          (setq-local meow--temp-state-before nil))
-      (setq-local meow--temp-state-before (meow--current-state))
-      (meow--switch-state 'motion)))
+  ;; (defvar-local meow--temp-state-before nil)
+  ;; (defun my/meow-temp-motion (&optional arg)
+  ;;   "Switch between meow-motion-mode and meow-normal-mode automatically."
+  ;;   (interactive "p")
+  ;;   (when (region-active-p)
+  ;;     (meow--cancel-selection))
+  ;;   (if (< arg 0)
+  ;;       (progn
+  ;;         (meow--switch-state meow--temp-state-before)
+  ;;         (setq-local meow--temp-state-before nil))
+  ;;     (setq-local meow--temp-state-before (meow--current-state))
+  ;;     (meow--switch-state 'motion)))
 
   ;; wrapper of meow-redo
   (defvar meow--kbd-undo-redo "C-?"
@@ -3706,8 +3708,9 @@ With a prefix argument prompt for the format."
 #+begin_src emacs-lisp :lexical t
 (use-package isolate
   :demand t
-  :config
-  (add-hook 'isolate-add-mode-hook #'my/meow-motion-temporary))
+  ;; :config
+  ;; (add-hook 'isolate-add-mode-hook #'my/meow-temp-motion)
+  )
 #+end_src
 
 *** diff-mode                                                             :diff:
@@ -5535,7 +5538,7 @@ to define a org presentation like in system craft
 *** markdown
 
 #+begin_src emacs-lisp :lexical t
-(use-package markdown-mode)
+;; (use-package markdown-mode)
 
 (use-package md
   :mode ("\\.md\\'" . md-ts-mode)
