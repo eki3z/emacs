@@ -4,7 +4,7 @@
 
 set -ue
 
-source "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")/lib/emacsclient.sh"
+source "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")/emacsclient.sh"
 
 emacsclient::ensure_running
 
