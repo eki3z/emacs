@@ -5011,7 +5011,7 @@ PROJECT_PATH and FILEPATH is needed."
                    (concat "typescript" eslint-suffix))
                   ((web-file-get-server ext)
                    (concat (web-file-get-server ext) "_emmet" tailwindcss-suffix)))))
-            (temp-log (format (concat "%s" (s-repeat 4 "\n%-13s: %S"))
+            (temp-log (format (concat "%s" (string-join (make-list 4 "\n%-13s: %S")))
                               (propertize "[lsp-bridge-multi-server]" 'face 'error)
                               "project_path" project_path
                               "file_path" filepath
@@ -5042,7 +5042,7 @@ PROJECT_PATH and FILEPATH is needed."
   ;;                      ((or (and ext (string= ext "toml"))
   ;;                           (memq major-mode '(toml-ts-mode conf-toml-mode)))
   ;;                       "toml-language-server"))))
-  ;;         (temp-log (format (concat "%s" (s-repeat 4 "\n%-13s: %S"))
+  ;;         (temp-log (format (concat "%s" (string-join (make-list 4 "\n%-13s: %S")))
   ;;                           (propertize "[lsp-bridge-single-server]" 'face 'success)
   ;;                           "project_path" project_path
   ;;                           "file_path" filepath
@@ -5089,7 +5089,7 @@ PROJECT_PATH and FILEPATH is needed."
                    ((pred typescript-ls-get-id) (typescript-ls-get-id ext))
                    ((pred markdown-p) "markdown")
                    (_ ext))))))
-      (temp-log (format (concat "%s" (s-repeat 5 "\n%-13s: %S"))
+      (temp-log (format (concat "%s" (string-join (make-list 5 "\n%-13s: %S")))
                         (propertize "[lsp-bridge-get-id]" 'face 'warning)
                         "project_path" project_path
                         "file_path" filepath
@@ -5111,7 +5111,7 @@ PROJECT_PATH and FILEPATH is needed."
              (when (member "tailwindcss" servers)
                (modify-syntax-entry ?- "w")
                (setq-local lsp-bridge-enable-completion-in-string t))
-             (temp-log (format (concat "%s" (s-repeat 2 "\n%-13s: %S"))
+             (temp-log (format (concat "%s" (string-join (make-list 2 "\n%-13s: %S")))
                                (propertize "[lsp-bridge-servers]" 'face 'warning)
                                "current_buffer" (current-buffer)
                                "servers" servers))))))))
