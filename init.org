@@ -4552,6 +4552,7 @@ If CN is non-nil, search in zh-CN documentation."
 
 #+begin_src emacs-lisp :lexical t
 (use-package transient
+  :require t
   :bind
   (:map transient-map
    ("ESC" . transient-quit-one)
