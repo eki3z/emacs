@@ -2923,9 +2923,13 @@ No changes in mode-line."
 
 #+begin_src emacs-lisp :lexical t
 (use-package rainbow-delimiters
-  :hook (prog-mode-hook . rainbow-delimiters-mode)
+  :hook (prog-mode-hook . rainbow-delimiters-setup)
   :init
-  (setq rainbow-delimiters-max-face-count 5))
+  (setq rainbow-delimiters-max-face-count 5)
+  ;; NOTE disable in html-kind modes
+  (defun rainbow-delimiters-setup ()
+    (unless (memq major-mode '(js-jsx-mode tsx-ts-mode))
+      (rainbow-delimiters-mode 1))))
 #+end_src
 
 *** highlight-parentheses
