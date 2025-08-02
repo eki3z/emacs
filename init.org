@@ -4410,8 +4410,7 @@ If CN is non-nil, search in zh-CN documentation."
            (flymake-collection-ruff (python-flymake :disabled t)))
           ((sh-mode bash-ts-mode) .
            (flymake-collection-shellcheck (sh-shellcheck-flymake :disabled t)))
-          ((js-mode js-ts-mode typescript-mode typescript-ts-mode
-                    web-vue-mode typescript-tsx-mode js-jsx-mode) .
+          ((js-mode js-ts-mode typescript-ts-mode js-jsx-mode tsx-ts-mode web-vue-mode) .
                     (flymake-collection-eslint))
           ((json-mode json-ts-mode) flymake-collection-jq)
           ((yaml-mode yaml-ts-mode) flymake-collection-yamllint)
