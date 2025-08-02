@@ -4980,12 +4980,12 @@ server detect order:
           'full
           "tailwind\\.config\\.\\(j\\|cj\\|mj\\|t\\)s\\'")))
 
-  (defun eslint-p (project_path)
-    (and (file-directory-p project_path)
-         (directory-files
-          project_path
-          'full
-          "\\`\\(eslint\\.config\\.[m|c]?js\\|\\.eslintrc\\.\\(c?js\\|ya?ml\\|json\\)\\)\\'")))
+  ;; (defun eslint-p (project_path)
+  ;;   (and (file-directory-p project_path)
+  ;;        (directory-files
+  ;;         project_path
+  ;;         'full
+  ;;         "\\`\\(eslint\\.config\\.[m|c]?js\\|\\.eslintrc\\.\\(c?js\\|ya?ml\\|json\\)\\)\\'")))
 
   ;; customize func to define project path
   (setq lsp-bridge-get-project-path-by-filepath nil)
@@ -4998,26 +4998,21 @@ server detect order:
 PROJECT_PATH and FILEPATH is needed."
     (save-excursion
       (let* ((ext (filepath-ext filepath))
-             (tailwindcss-suffix (and (tailwindcss-p project_path) "_tailwindcss"))
-             (eslint-suffix (and (eslint-p project_path) "_eslint")))
-        (when (or tailwindcss-suffix eslint-suffix)
-          (let ((server
-                 (cond
-                  ((member (typescript-ls-get-id ext)
-                           '("javascriptreact" "typescriptreact"))
-                   (concat "typescript_emmet" tailwindcss-suffix eslint-suffix))
-                  ((member (typescript-ls-get-id ext)
-                           '("javascript" "typescript"))
-                   (concat "typescript" eslint-suffix))
-                  ((web-file-get-server ext)
-                   (concat (web-file-get-server ext) "_emmet" tailwindcss-suffix)))))
-            (temp-log (format (concat "%s" (string-join (make-list 4 "\n%-13s: %S")))
-                              (propertize "[lsp-bridge-multi-server]" 'face 'error)
-                              "project_path" project_path
-                              "file_path" filepath
-                              "file_ext" ext
-                              "start_server" server))
-            server)))))
+             (tailwindcss-suffix (and (tailwindcss-p project_path) "_tailwindcss")))
+        (let ((server
+               (cond
+                ((member (typescript-ls-get-id ext)
+                         '("javascriptreact" "typescriptreact"))
+                 (concat "typescript_emmet" tailwindcss-suffix))
+                ((web-file-get-server ext)
+                 (concat (web-file-get-server ext) "_emmet" tailwindcss-suffix)))))
+          (temp-log (format (concat "%s" (string-join (make-list 4 "\n%-13s: %S")))
+                            (propertize "[lsp-bridge-multi-server]" 'face 'error)
+                            "project_path" project_path
+                            "file_path" filepath
+                            "file_ext" ext
+                            "start_server" server))
+          server))))
 
   (setq lsp-bridge-multi-lang-server-extension-list
         '((("tsx")   . "typescript_emmet")
