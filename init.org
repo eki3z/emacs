@@ -4388,10 +4388,14 @@ If CN is non-nil, search in zh-CN documentation."
         flymake-fringe-indicator-position nil
         flymake-no-changes-timeout 20))
 
+;; (use-package flyover
+;;   :hook (flymake-mode-hook . flyover-mode)
+;;   :init
+;;   (setq flyover-checkers '(flymake)))
+
 ;; REQUIRE
-;; pip install ruff-lsp yamllint
+;; pip install yamllint
 ;; brew install shellcheck tidy-html5 jq
-;; gem install mdl
 ;; luarocks install luacheck
 ;; npm install -g less
 (use-package flymake-collection
@@ -4399,24 +4403,19 @@ If CN is non-nil, search in zh-CN documentation."
   :init
   (setq flymake-collection-hook-config
         '(((python-ts-mode python-mode) .
-           (flymake-collection-ruff
-            (python-flymake :disable t)))
+           (flymake-collection-ruff (python-flymake :disabled t)))
           ((sh-mode bash-ts-mode) .
-           (flymake-collection-shellcheck
-            (sh-shellcheck-flymake :disabled t)))
-          ((yaml-mode yaml-ts-mode) .
-           flymake-collection-yamllint)
-          ;; REQUIRE brew install tidy-html5
-          ((web-mode html-ts-mode mhtml-mode html-mode) .
-           (flymake-collection-html-tidy))
-          ;; ((js-mode js-ts-mode typescript-mode typescript-ts-mode web-vue-mode
-          ;;           typescript-tsx-mode) .
-          ;; (flymake-collection-eslint))
+           (flymake-collection-shellcheck (sh-shellcheck-flymake :disabled t)))
+          ((js-mode js-ts-mode typescript-mode typescript-ts-mode
+                    web-vue-mode typescript-tsx-mode js-jsx-mode) .
+                    (flymake-collection-eslint))
           ((json-mode json-ts-mode) flymake-collection-jq)
-          ((markdown-mode gfm-mode) flymake-collection-markdownlint)
+          ((yaml-mode yaml-ts-mode) flymake-collection-yamllint)
+          ;; REQUIRE brew install tidy-html5
+          ((web-mode html-ts-mode mhtml-mode html-mode) flymake-collection-html-tidy)
           (c-ts-mode flymake-collection-clang)
           ((lua-mode lua-ts-mode) flymake-collection-luacheck)
-          ((ruby-mode ruby-ts-mode) . (flymake-collection-rubocop))
+          ((ruby-mode ruby-ts-mode) flymake-collection-rubocop)
           (sql-mode flymake-collection-sql-lint)
           (nxml-mode flymake-collection-xmllint)
           (less-mode flymake-collection-less))))
@@ -4446,7 +4445,7 @@ If CN is non-nil, search in zh-CN documentation."
 
 #+begin_src emacs-lisp :lexical t
 (use-package apheleia
-  :hook ((typescript-ts-mode-hook js-ts-mode-hook)
+  :hook ((typescript-ts-mode-hook js-ts-mode-hook python-ts-mode-hook)
          . apheleia-mode)
   :init
   (setq apheleia-hide-log-buffers t)
@@ -4467,8 +4466,7 @@ If CN is non-nil, search in zh-CN documentation."
   :config
   (alist-set! apheleia-formatters
               '((shfmt . ("shfmt" "-i" "2" "-bn" "-ci"))
-                (stylua . ("stylua" "--search-parent-directories" "-"))
-                (d2fmt . ("d2" "fmt" filepath))))
+                (stylua . ("stylua" "--search-parent-directories" "-"))))
   (alist-set! apheleia-mode-alist
               '((python-mode . (ruff isort))
                 (python-ts-mode . (ruff isort))
@@ -4843,21 +4841,17 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
 *** lsp-bridge
 
-install: ~pthon3 -m pip install epc orjson sexpdata six paramiko ruff packaging~
-
 #+begin_src emacs-lisp :lexical t
 (use-package lsp-bridge
   :hook (after-init-hook . global-lsp-bridge-mode)
   :bind
   ("M-d" . lsp-bridge-doc-toggle)
   :init
-  ;; Setup language
   (setq lsp-bridge-enable-org-babel t)
   (setq lsp-bridge-python-command (expand-file-name "lsp-bridge/python-lsp-bridge" borg-drones-directory))
-  (setq lsp-bridge-python-multi-lsp-server "basedpyright_ruff")
+  ;; setup language
   (setq lsp-bridge-lua-lsp-server "sumneko")
   (setq lsp-bridge-c-lsp-server "clangd")
-
   ;; Setup tsdk path in volar.json
   (defun tsdk-path-detect ()
     (let ((bin-path (string-trim (shell-command-to-string "command -v tsc"))))
@@ -5021,8 +5015,7 @@ PROJECT_PATH and FILEPATH is needed."
           (("css" "less" "scss") . "css_emmet")))
 
   (setq lsp-bridge-multi-lang-server-mode-list
-        `(((python-mode python-ts-mode) . ,lsp-bridge-python-multi-lsp-server)
-          ((js-jsx-mode) . "javascript_emmet")
+        `(((js-jsx-mode) . "javascript_emmet")
           ((tsx-ts-mode) . "typescript_emmet")
           ((mhtml-mode html-mode html-ts-mode) . "html_emmet")
           ((css-mode css-ts-mode less-css-mode scss-mode) . "css_emmet")))
@@ -5078,12 +5071,7 @@ PROJECT_PATH and FILEPATH is needed."
                    ((pred typescript-ls-get-id) (typescript-ls-get-id ext))
                    ("erb" "eruby")
                    ((or "css" "html" "less" "sass" "scss" "svelte" "pug" "vue") ext)
-                   (_ "html")))
-                ("vscode-eslint-language-server"
-                 (pcase ext
-                   ((pred typescript-ls-get-id) (typescript-ls-get-id ext))
-                   ((pred markdown-p) "markdown")
-                   (_ ext))))))
+                   (_ "html"))))))
       (temp-log (format (concat "%s" (string-join (make-list 5 "\n%-13s: %S")))
                         (propertize "[lsp-bridge-get-id]" 'face 'warning)
                         "project_path" project_path
@@ -5833,18 +5821,16 @@ The DWIM behaviour of this command is as follows:
 ;;   (interactive)
 ;;
 ;;   )
-;; TODO switch envrc/mise accroding to project
 
-;; (use-package envrc
-;;   :mode ("\\.env\\(rc\\)?\\'" . envrc-file-mode)
-;;   :hook (after-init-hook . envrc-global-mode)
-;;   )
+(use-package envrc
+  :mode ("\\.env\\(rc\\)?\\'" . envrc-file-mode)
+  :hook (after-init-hook . envrc-global-mode))
 
-(use-package mise
-  :hook (after-init-hook . global-mise-mode)
-  ;; :init
-  ;; (setq mise-debug t)
-  )
+;; (use-package mise
+;;   :hook (after-init-hook . global-mise-mode)
+;; :init
+;; ;; (setq mise-debug t)
+;; )
 #+end_src
 
 *** combobulate                                                        :treesit:
