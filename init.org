@@ -2802,6 +2802,8 @@ No changes in mode-line."
         `(org-block-begin-line ((t (:background ,(doom-blend 'bg 'base3 0.95)
                                     :foreground ,(doom-color 'doc-comments)
                                     :extend t))))
+        `(org-ellipsis         ((t (:background ,(doom-color 'bg) :bold t))))
+
         ;; combobulate
         '(combobulate-refactor-highlight-face ((t (:background unspecified))))
         `(combobulate-refactor-label-face ((t (:foreground ,(doom-color 'bg)
@@ -5582,7 +5584,7 @@ to define a org presentation like in system craft
         org-fold-catch-invisible-edits 'smart
         org-startup-indented nil
         org-startup-folded 'overview
-        org-ellipsis " ▾"
+        org-ellipsis " .."
         org-pretty-entities t
         org-hide-emphasis-markers nil)
 
