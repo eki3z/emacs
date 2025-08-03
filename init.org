@@ -5289,10 +5289,11 @@ PROJECT_PATH and FILEPATH is needed."
 
 (use-package typescript-ts-mode
   :mode "\\.ts\\'"
-  :hook (typescript-ts-mode-hook . typescript-ts-mode-setup)
-  :init
-  (defun typescript-ts-mode-setup ()
-    (add-hook 'post-self-insert-hook #'ah/typescript-generics-angle-pair nil t)))
+  ;; :hook (typescript-ts-mode-hook . typescript-ts-mode-setup)
+  ;; :init
+  ;; (defun typescript-ts-mode-setup ()
+  ;;   (add-hook 'post-self-insert-hook #'ah/typescript-generics-angle-pair nil t))
+  )
 
 (use-package web-mode
   ;; :hook (web-mode-hook . web-mode-setup)
