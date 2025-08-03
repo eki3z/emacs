@@ -4918,6 +4918,24 @@ server detect order:
   (defun filepath-ext (filepath)
     (or (file-name-extension (concat "a" (file-name-nondirectory filepath))) ""))
 
+   ;; TODO refactor logic to replace both get-id function
+  (defun get-file-id-for-bridge (ext)
+    (cond
+     ((or (string= ext "js") (memq major-mode '(js-mode js-ts-mode)))
+      "javascript")
+     ((or (string= ext "ts") (eq major-mode 'typescript-ts-mode))
+      "typescript")
+     ((or (string= ext "jsx") (eq major-mode 'js-jsx-mode))
+      "javascriptreact")
+     ((or (string= ext "tsx") (eq major-mode 'tsx-ts-mode))
+      "typescriptreact")
+     ((or (string= ext "css") (memq major-mode '(css-mode css-ts-mode)))
+      "css")
+     ((or (string= ext "scss") (eq major-mode 'scss-mode))
+      "scss")
+     ((or (string= ext "less") (eq major-mode 'less-css-mode))
+      "less")))
+
   (defun typescript-ls-get-id (ext)
     (cond
      ((or (string= ext "js") (memq major-mode '(js-mode js-ts-mode)))
@@ -4980,7 +4998,7 @@ PROJECT_PATH and FILEPATH is needed."
              (tailwindcss-suffix (and (tailwindcss-p project_path) "_tailwindcss")))
         (let ((server
                (cond
-                ((member (typescript-ls-get-id ext)
+                ((member (get-file-id-for-bridge ext)
                          '("javascriptreact" "typescriptreact"))
                  (concat "typescript_emmet" tailwindcss-suffix))
                 ((web-file-get-server ext)
