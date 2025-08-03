@@ -736,20 +736,6 @@ Same as `replace-string C-q C-m RET RET'."
                 "\n")
         (setq i (- i 96))))))
 
-;; stock deviation
-(defun stock-5p (price)
-  (let (lst)
-    (dolist (l (number-sequence -5 5 0.5))
-      (and (zerop l) (push "+++++++++++" lst))
-      (push (format "%+4.1f%%  %.2f" l (/ (* (+ 100 l) price) 100)) lst)
-      (and (zerop l) (push "-----------" lst)))
-    (string-join lst "\n")))
-
-(defun org-diary-template-for-stock ()
-  (if-let* ((lst stocks-in-hand))
-      (mapconcat (lambda (s) (format "**** %s\n- 预测:\n- 对策:\n- 结果:\n" s)) lst "\n")
-    "- "))
-
 
 (defun temp-log (msg)
   (with-current-buffer (get-buffer-create " *temp-log*")
@@ -4971,19 +4957,14 @@ server detect order:
 
   ;; NOTE project-path return same value as filepath if lsp-bridge cannot detect project
   ;; so check it ahead, tailwindcss do not support single file mode
+  ;; check whether node_modules/tailwindcss directory exists
   (defun tailwindcss-p (project_path)
     (and (file-directory-p project_path)
-         (directory-files
-          project_path
-          'full
-          "tailwind\\.config\\.\\(j\\|cj\\|mj\\|t\\)s\\'")))
-
-  ;; (defun eslint-p (project_path)
-  ;;   (and (file-directory-p project_path)
-  ;;        (directory-files
-  ;;         project_path
-  ;;         'full
-  ;;         "\\`\\(eslint\\.config\\.[m|c]?js\\|\\.eslintrc\\.\\(c?js\\|ya?ml\\|json\\)\\)\\'")))
+         (or (directory-files
+              project_path
+              nil
+              "tailwind\\.config\\.[m|c]?[j|t]s\\'")
+             (file-directory-p (expand-file-name "node_modules/tailwindcss" project_path)))))
 
   ;; customize func to define project path
   (setq lsp-bridge-get-project-path-by-filepath nil)
@@ -5063,19 +5044,19 @@ PROJECT_PATH and FILEPATH is needed."
     (let ((id (pcase server
                 ("typescript-ls" (typescript-ls-get-id ext))
                 ("vscode-css-language-server" (css-ls-get-id ext))
+                ("emmet-ls"
+                 (pcase ext
+                   ((pred typescript-ls-get-id) (typescript-ls-get-id ext))
+                   ("erb" "eruby")
+                   ((or "css" "html" "less" "sass" "scss" "svelte" "pug" "vue") ext)
+                   (_ "html")))
                 ("tailwindcss"
                  (pcase ext
                    ((pred typescript-ls-get-id) (typescript-ls-get-id ext))
                    ((pred markdown-p) "markdown")
                    ((pred handlebar-p) "handlebars")
                    ("res" "rescript")
-                   (_ ext)))
-                ("emmet-ls"
-                 (pcase ext
-                   ((pred typescript-ls-get-id) (typescript-ls-get-id ext))
-                   ("erb" "eruby")
-                   ((or "css" "html" "less" "sass" "scss" "svelte" "pug" "vue") ext)
-                   (_ "html"))))))
+                   (_ ext))))))
       (temp-log (format (concat "%s" (string-join (make-list 5 "\n%-13s: %S")))
                         (propertize "[lsp-bridge-get-id]" 'face 'warning)
                         "project_path" project_path
@@ -5100,7 +5081,7 @@ PROJECT_PATH and FILEPATH is needed."
                (setq-local lsp-bridge-enable-completion-in-string t))
              (temp-log (format (concat "%s" (string-join (make-list 2 "\n%-13s: %S")))
                                (propertize "[lsp-bridge-servers]" 'face 'warning)
-                               "current_buffer" (current-buffer)
+                               "current_buf" (current-buffer)
                                "servers" servers))))))))
   )
 #+end_src
@@ -5818,17 +5799,21 @@ The DWIM behaviour of this command is as follows:
 *** envrionment                                                            :dev:
 
 #+begin_src emacs-lisp :lexical t :tangle yes
-;; for npm/pnpm project
-;; create or add path
-;; allow envrc
-;; (defun my/env-add-path ()
-;;   (interactive)
-;;
-;;   )
-
 (use-package envrc
   :mode ("\\.env\\(rc\\)?\\'" . envrc-file-mode)
-  :hook (after-init-hook . envrc-global-mode))
+  :hook (after-init-hook . envrc-global-mode)
+  :init
+  (defun my/envrc-add-bin ()
+    "Add bin path to env in current project."
+    (interactive)
+    (when-let* ((proj (project-root (project-current)))
+                (binpath (completing-read "Add bin to PATH:"
+                                          '("node_modules/.bin")
+                                          nil nil))
+                (filepath (expand-file-name ".envrc" proj)))
+      (append-to-file (concat "\nPATH_add " binpath) nil filepath)
+      (envrc--run-direnv "allow")
+      (envrc--run-direnv "reload"))))
 
 ;; (use-package mise
 ;;   :hook (after-init-hook . global-mise-mode)
