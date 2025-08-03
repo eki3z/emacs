@@ -14,7 +14,7 @@ A literate configuration for =Emacs=.
 
 ** early-init start
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :comments no
 ;;; early-init.el --- settings before frame initialize -*- lexical-binding: t no-byte-compile: t -*-
 ;;; Commentary:
 ;;; Code:
@@ -116,7 +116,7 @@ MacOs related
 
 ** init-mini start
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :comments no
 ;;; init-mini.el --- minimal startup  -*- lexical-binding: t no-byte-compile: t -*-
 ;;; Commentary:
 ;;; Code:
@@ -898,7 +898,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 ** init start
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :comments no
 ;;; init.el --- init startup  -*- lexical-binding: t no-byte-compile: t -*-
 #+end_src
 
