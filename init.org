@@ -5563,10 +5563,11 @@ to define a org presentation like in system craft
   (setq org-insert-mode-line-in-empty-file t)
   (setq org-imenu-depth 4)
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "DOING(i)" "HANGUP(h)" "|" "DONE(d)" "CANCEL(c)")
-          (sequence "⚑(T)" "🏴(I)" "❓(H)" "|" "✔(D)" "✘(C)"))
-        org-todo-keyword-faces '(("HANGUP" . warning)
-                                 ("❓" . warning))
+        '((sequence "TODO(t)" "DONE(d)" "CACEL(c)")
+          (sequence "SKIP(s)" "LOSE(l)" "WIN(w)"))
+        org-todo-keyword-faces '(("SKIP" . warning)
+                                 ("LOSE" . error)
+                                 ("WIN" . success))
         org-priority-faces '((?A . error)
                              (?B . warning)
                              (?C . success)))
@@ -5655,6 +5656,7 @@ to define a org presentation like in system craft
   :init
   (setq org-modern-star 'replace
         org-modern-tag nil
+        org-modern-todo-faces org-todo-keyword-faces
         org-modern-replace-stars "❶❷❸❹❺❻❼❽❾")
   (setq org-modern-list
         '((?* . "⭑")
