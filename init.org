@@ -4852,6 +4852,9 @@ Otherwise, behave like `magit-display-buffer-traditional'."
       (string-replace "bin/tsc" "lib/node_modules/typescript/lib" bin-path)))
   (setq lsp-bridge-tsdk-path (tsdk-path-detect))
 
+  (setq lsp-bridge-breadcrumb-idle-delay 0.1)
+  (setq lsp-bridge-breadcrumb-show-icon t)
+
   (setq lsp-bridge-enable-inlay-hint t)
   (setq lsp-bridge-enable-completion-in-string t)
   ;; (setq lsp-bridge-completion-in-string-file-types '("vue" "dart"))
@@ -5092,6 +5095,8 @@ PROJECT_PATH and FILEPATH is needed."
 
   (add-hook 'lsp-bridge-mode-hook #'my/bridge-server-setup)
   (defun my/bridge-server-setup ()
+    (require 'lsp-bridge-breadcrumb)
+    (lsp-bridge-breadcrumb-mode)
     (run-with-timer
      3 nil
      (lambda()
