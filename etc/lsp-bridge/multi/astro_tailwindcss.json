@@ -18,5 +18,7 @@
   "document_symbol": "astro-ls",
   "workspace_symbol": "astro-ls",
   "semantic_tokens": "astro-ls",
-  "inlay_hint": "astro-ls"
+  "inlay_hint": "astro-ls",
+  "imenu": "astro-ls",
+  "breadcrumb": "astro-ls"
 }

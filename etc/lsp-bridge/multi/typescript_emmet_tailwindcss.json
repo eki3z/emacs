@@ -18,5 +18,7 @@
   "document_symbol": "typescript-ls",
   "workspace_symbol": "typescript-ls",
   "semantic_tokens": "typescript-ls",
-  "inlay_hint": "typescript-ls"
+  "inlay_hint": "typescript-ls",
+  "imenu": "typescript-ls",
+  "breadcrumb": "typescript-ls"
 }
