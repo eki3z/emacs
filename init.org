@@ -3369,7 +3369,8 @@ Syntax highlighting of known Elisp symbols
           ("typescriptlang\\.org"    . typescript-ts-mode)
           ("react\\.docschina\\.org" . js-jsx-mode)
           ("react\\.dev"             . js-jsx-mode)
-          ("play\\.d2lang\\.com"     . d2-ts-mode)))
+          ("play\\.d2lang\\.com"     . d2-ts-mode)
+          ("joinquant\\.com"         . python-ts-mode)))
 
   :config
   ;; HACK change major mode if website extension is wrong
