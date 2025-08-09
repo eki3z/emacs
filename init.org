@@ -4837,7 +4837,9 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
 #+begin_src emacs-lisp :lexical t
 (use-package lsp-bridge
-  :hook (after-init-hook . global-lsp-bridge-mode)
+  :hook
+  (after-init-hook . global-lsp-bridge-mode)
+  (lsp-bridge-mode-hook . lsp-bridge-breadcrumb-mode)
   :bind
   ("M-d" . lsp-bridge-doc-toggle)
   :init
@@ -4871,7 +4873,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
       (lsp-bridge-popup-documentation)))
 
   :config
-
+  (require 'lsp-bridge-breadcrumb)
   ;; Setup server
   (setq lsp-bridge-user-langserver-dir
         (expand-file-name "lsp-bridge/single" my/dir-etc))
@@ -4886,6 +4888,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
               git-commit-mode-hook
               mhtml-mode-hook
               html-mode-hook
+              zig-ts-mode-hook
               lua-ts-mode-hook
               astro-ts-mode-hook
               js-json-mode-hook
@@ -5095,8 +5098,6 @@ PROJECT_PATH and FILEPATH is needed."
 
   (add-hook 'lsp-bridge-mode-hook #'my/bridge-server-setup)
   (defun my/bridge-server-setup ()
-    (require 'lsp-bridge-breadcrumb)
-    (lsp-bridge-breadcrumb-mode)
     (run-with-timer
      3 nil
      (lambda()
