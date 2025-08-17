@@ -4376,8 +4376,11 @@ If CN is non-nil, search in zh-CN documentation."
   :hook ((prog-mode-hook
           markdown-mode-hook
           yaml-ts-mode-hook
-          web-vue-mode-hook) . flymake-mode)
+          web-vue-mode-hook) . flymake-setup)
   :init
+  (defun flymake-setup ()
+    (unless (eq major-mode 'envrc-file-mode)
+      (flymake-mode 1)))
   (setq flymake-indicator-type nil
         flymake-margin-indicator-position nil
         flymake-fringe-indicator-position nil
