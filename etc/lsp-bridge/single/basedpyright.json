@@ -1,0 +1,23 @@
+{
+  "name": "basedpyright",
+  "languageId": "python",
+  "command": [
+    "basedpyright-langserver",
+    "--stdio",
+    "--cancellationReceive=file:%FILEHASH%"
+  ],
+  "settings": {
+    "basedpyright.analysis": {
+      "autoImportCompletions": true,
+      "useLibraryCodeForTypes": true,
+      "typeshedPaths": [],
+      "extraPaths": [],
+      "stubPath": "./typings",
+      "diagnosticMode": "openFilesOnly",
+      "logLevel": "verbose",
+      "autoSearchPaths": true,
+      "typeCheckingMode": "basic",
+      "reportUnusedCallResult ": false
+    }
+  }
+}

@@ -1601,7 +1601,7 @@ make sure emacs server running
 
 #+begin_src emacs-lisp :lexical t
 (use-package llama
-  :config (global-llama-fontify-mode))
+  :config (llama-fontify-mode 1))
 #+end_src
 
 *** dash
@@ -4304,15 +4304,12 @@ Or create a new one in other window."
     (setq-local cursor-in-non-selected-windows nil))
 
   :config
-  (prependq! quickrun-file-alist
-             '(("\\.d2\\'" . "d2")))
-
   (prependq! quickrun--major-mode-alist
              '((lisp-interaction-mode . "elisp")
                (typescript-ts-mode . "typescript")
                (js-ts-mode . "javascript")
                (bash-ts-mode . "shellscript")
-               (d2-ts-mode . "d2")))
+               (python-ts-mode . "python")))
 
   (prependq! quickrun--language-alist
              '(("d2" . ((:command . "d2")
@@ -4320,8 +4317,11 @@ Or create a new one in other window."
                         (:exec . ("%c %o --watch %s %s.svg"))
                         (:compile-only . "%c %o %s %s.svg")
                         (:remove . ("%s.svg" "%s.png"))
-                        (:tempfile nil)
-                        (:description . "Compile d2 diagram and display")))))
+                        (:tempfile . nil)
+                        (:description . "Compile d2 diagram and display")))
+               ("python/uv" . ((:command . "uv")
+                               (:exec . ("%c run %s"))
+                               (:description . "Run python in uv project")))))
 
   )
 
@@ -4405,7 +4405,7 @@ If CN is non-nil, search in zh-CN documentation."
           ((sh-mode bash-ts-mode) .
            (flymake-collection-shellcheck (sh-shellcheck-flymake :disabled t)))
           ((js-mode js-ts-mode typescript-ts-mode js-jsx-mode tsx-ts-mode web-vue-mode) .
-                    (flymake-collection-eslint))
+           (flymake-collection-eslint))
           ((json-mode json-ts-mode) flymake-collection-jq)
           ((yaml-mode yaml-ts-mode) flymake-collection-yamllint)
           ;; REQUIRE brew install tidy-html5
@@ -4932,7 +4932,7 @@ server detect order:
   (defun filepath-ext (filepath)
     (or (file-name-extension (concat "a" (file-name-nondirectory filepath))) ""))
 
-   ;; TODO refactor logic to replace both get-id function
+  ;; TODO refactor logic to replace both get-id function
   (defun get-file-id-for-bridge (ext)
     (cond
      ((or (string= ext "js") (memq major-mode '(js-mode js-ts-mode)))
