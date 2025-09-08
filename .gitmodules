@@ -52,6 +52,9 @@
 [submodule "compat"]
 	path = lib/compat
 	url = https://github.com/emacs-compat/compat.git
+[submodule "cond-let"]
+	path = lib/cond-let
+	url = https://github.com/tarsius/cond-let
 [submodule "consult"]
 	path = lib/consult
 	url = https://github.com/minad/consult
