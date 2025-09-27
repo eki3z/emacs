@@ -157,9 +157,6 @@
 [submodule "etrace"]
 	path = lib/etrace
 	url = https://github.com/aspiers/etrace.git
-[submodule "evil"]
-	path = lib/evil
-	url = https://github.com/emacs-evil/evil
 [submodule "exec-path-from-shell"]
 	path = lib/exec-path-from-shell
 	url = https://github.com/purcell/exec-path-from-shell
