@@ -1928,6 +1928,10 @@ install icons: ~brew install font-symbols-only-nerd-font~
   (meow-setup)
   (meow-global-mode 1)
 
+  (with-eval-after-load 'git-commit
+    ;; Set to meow-insert-mode automatically
+    (add-hook 'git-commit-setup-hook #'meow-insert-mode))
+
   (with-eval-after-load 'consult
     (setq meow-goto-line-function #'consult-goto-line))
 
@@ -1955,17 +1959,18 @@ switch input methods atuomatically with modal edit, ~brew tap laishulu/macism~
   :init
   (setq sis-english-source "com.apple.keylayout.ABC"
         sis-other-source "com.apple.inputmethod.SCIM.ITABC")
-  (defun my/meow-reset-sis (&rest _)
-    "Reset english input when not in meow-insert-state."
-    (unless meow-insert-mode
-      (sis-set-english)))
 
-  ;; Reset when switchshi to non-insert meow-state
-  (add-hook 'meow-insert-exit-hook #'sis-set-english)
-  ;; Reset when refocus in frame
-  (add-function :after after-focus-change-function #'my/meow-reset-sis)
-  ;; Reset when change window
-  (add-hook 'window-selection-change-functions #'my/meow-reset-sis))
+  (with-eval-after-load 'meow
+    ;; Reset when switchshi to non-insert meow-state
+    (add-hook 'meow-insert-exit-hook #'sis-set-english)
+    (defun my/meow-reset-sis (&rest _)
+      "Reset english input when not in meow-insert-state."
+      (unless meow-insert-mode
+        (sis-set-english)))
+    ;; Reset when refocus in frame
+    (add-function :after after-focus-change-function #'my/meow-reset-sis)
+    ;; Reset when change window
+    (add-hook 'window-selection-change-functions #'my/meow-reset-sis)))
 #+end_src
 
 *** dired
@@ -4203,7 +4208,6 @@ install: ~brew install libvterm cmake~
   (setq vterm-buffer-name "*vterm*")
 
   (defun vterm-setup ()
-    (meow-mode -1)
     (and hl-line-mode (hl-line-mode 'toggle)))
 
   (defun vterm--get-buffers ()
@@ -4632,9 +4636,6 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
   (setq magit-commit-reword-override-date nil
         magit-commit-show-diff nil)
-
-  ;; Set to meow-insert-mode automatically
-  (add-hook 'git-commit-setup-hook #'meow-insert-mode)
 
   ;;; submodule
 
