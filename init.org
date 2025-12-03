@@ -2666,7 +2666,7 @@ $0`(yas-escape-text yas-selected-text)`")
   (setq mini-echo-mise-show-always nil)
   (setq mini-echo-persistent-rule
         '(:long ("meow" "shrink-path" "vcs" "buffer-position"
-                 "buffer-size" "flymake" "mise" "envrc")
+                 "buffer-size" "remote-host" "flymake" "mise" "envrc")
           :short ("meow" "buffer-name" "buffer-position" "flymake")))
 
   (setq mini-echo-persistent-function #'my/mini-echo-persistent-detect)
