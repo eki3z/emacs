@@ -2504,7 +2504,7 @@ A prefix argument means to unmark them instead."
         :category file
         :face     consult-file
         :history  file-name-history
-        :enabled  ,(lambda () (getenv "ZLUA_SCRIPT"))
+        :enabled  ,(lambda () (and (getenv "ZLUA_SCRIPT") (executable-find "lua")))
         :items
         ,(lambda ()
            (nreverse (mapcar
@@ -2727,8 +2727,13 @@ No changes in mode-line."
 #+end_src
 
 *** themes
-
 #+begin_src emacs-lisp :lexical t
+(load-theme 'modus-vivendi-tinted t)
+(custom-set-faces
+ `(fringe ((t (:background unspecified)))))
+#+end_src
+
+#+begin_src emacs-lisp :lexical t :tangle no
 (use-package doom-themes
   :demand t
   :config
@@ -2960,24 +2965,26 @@ Syntax highlighting of known Elisp symbols
 (use-package diff-hl
   :hook (after-init-hook . global-diff-hl-mode)
   :init
-  (setq diff-hl-draw-borders nil
+  (setq diff-hl-draw-borders t
         diff-hl-ask-before-revert-hunk nil
-        diff-hl-show-staged-changes nil
+        diff-hl-update-async t
+        ;; diff-hl-show-staged-changes nil
         diff-hl-side 'left)
   :config
 
-  (use-package diff-hl-margin
-    :hook (global-diff-hl-mode-hook . diff-hl-margin-mode)
-    :init
-    ;; SEE https://symbl.cc/en/unicode/blocks/block-elements/
-    ;; (char-to-string ?\x258d) => "▍" , ?\x2588 - 258f
-    ;; if font is designed for chinese,then use ?\x258f, or use ?\x258d instead.
-    (setq diff-hl-margin-symbols-alist
-          '((insert  . "\x258f")
-            (delete  . "\x258f")
-            (change  . "\x258f")
-            (unknown . "\x258f")
-            (ignored . "\x258f"))))
+  ;; (use-package diff-hl-margin
+  ;;   :hook (global-diff-hl-mode-hook . diff-hl-margin-mode)
+  ;;   :init
+  ;;   ;; SEE https://symbl.cc/en/unicode/blocks/block-elements/
+  ;;   ;; (char-to-string ?\x258d) => "▍" , ?\x2588 - 258f
+  ;;   ;; if font is designed for chinese,then use ?\x258f, or use ?\x258d instead.
+  ;;   (setq diff-hl-margin-symbols-alist
+  ;;         '((insert  . "\x258f")
+  ;;           (delete  . "\x258f")
+  ;;           (change  . "\x258f")
+  ;;           (unknown . "\x258f")
+  ;;           (ignored . "\x258f")))
+  ;;   )
 
   (use-package diff-hl-dired
     :hook (dired-mode-hook . diff-hl-dired-mode-unless-remote))

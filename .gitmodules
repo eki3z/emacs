@@ -105,9 +105,6 @@
 	url = https://github.com/alexluigit/dirvish
 	load-path = .
 	load-path = extensions
-[submodule "doom-themes"]
-	path = lib/doom-themes
-	url = https://github.com/doomemacs/themes
 [submodule "duplexer"]
 	path = lib/duplexer
 	url = https://github.com/eki3z/duplexer.el
