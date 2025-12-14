@@ -2727,10 +2727,24 @@ No changes in mode-line."
 #+end_src
 
 *** themes
+
+https://protesilaos.com/emacs/modus-themes
+
 #+begin_src emacs-lisp :lexical t
-(load-theme 'modus-vivendi-tinted t)
-(custom-set-faces
- `(fringe ((t (:background unspecified)))))
+(require-theme 'modus-themes)
+(setq modus-themes-common-palette-overrides
+      '((fringe unspecified)
+        ;; (transient-key-stay red)
+        ;; (transient-key-exit green)
+        ;; (transient-key-return yellow)
+        ;; (transient-key-recurse magenta)
+        ;; (transient-key-stack cyan)
+        ))
+;; (defun modus-vivendi-setup ()
+;;   )
+
+;; (add-hook 'modus-themes-after-load-theme-hook #'modus-vivendi-setup)
+(modus-themes-load-theme 'modus-vivendi-tinted)
 #+end_src
 
 #+begin_src emacs-lisp :lexical t :tangle no
@@ -2971,21 +2985,6 @@ Syntax highlighting of known Elisp symbols
         ;; diff-hl-show-staged-changes nil
         diff-hl-side 'left)
   :config
-
-  ;; (use-package diff-hl-margin
-  ;;   :hook (global-diff-hl-mode-hook . diff-hl-margin-mode)
-  ;;   :init
-  ;;   ;; SEE https://symbl.cc/en/unicode/blocks/block-elements/
-  ;;   ;; (char-to-string ?\x258d) => "▍" , ?\x2588 - 258f
-  ;;   ;; if font is designed for chinese,then use ?\x258f, or use ?\x258d instead.
-  ;;   (setq diff-hl-margin-symbols-alist
-  ;;         '((insert  . "\x258f")
-  ;;           (delete  . "\x258f")
-  ;;           (change  . "\x258f")
-  ;;           (unknown . "\x258f")
-  ;;           (ignored . "\x258f")))
-  ;;   )
-
   (use-package diff-hl-dired
     :hook (dired-mode-hook . diff-hl-dired-mode-unless-remote))
 
