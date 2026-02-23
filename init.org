@@ -1044,8 +1044,7 @@ elp is useful for seeing which functions in a package are "hot".
     (keymap-set benchmark-init/tree-mode-map
                 "t" #'benchmark-init/show-durations-tabulated)
     (keymap-set benchmark-init/tabulated-mode-map
-                "t" #'benchmark-init/show-durations-tree))
-  (add-hook 'benchmark-init/tabulated-mode-hook #'hl-line-mode))
+                "t" #'benchmark-init/show-durations-tree)))
 #+end_src
 
 *** gcmh
@@ -1198,7 +1197,7 @@ make sure emacs server running
   :hook (after-init-hook . lin-global-mode)
   :config
   (appendq! lin-mode-hooks
-            '(prog-mode-hook text-mode-hook rg-mode-hook))
+            '(prog-mode-hook text-mode-hook rg-mode-hook benchmark-init/tabulated-mode-hook))
   (setq lin-face 'hl-line))
 #+end_src
 
@@ -1985,7 +1984,7 @@ switch input methods atuomatically with modal edit, ~brew tap laishulu/macism~
    ("C-c C-p" . wdired-change-to-wdired-mode)
    ;; ("C-c C-z f" . browse-url-of-file)
    ("{" . dired-omit-mode)
-   ("}" . dired-hide-details-mode))
+   ("[" . dired-preview-mode))
   :init
   (setq dired-free-space nil
         dired-kill-when-opening-new-dired-buffer t
@@ -1993,7 +1992,7 @@ switch input methods atuomatically with modal edit, ~brew tap laishulu/macism~
         dired-recursive-copies 'always)
   (setq dired-dwim-target t)
   (setq dired-movement-style 'cycle)
-
+  (setq dired-hide-details-hide-symlink-targets nil)
   (setq dired-no-confirm t
         dired-clean-up-buffers-too t
         dired-clean-confirm-killing-deleted-buffers nil)
@@ -2102,11 +2101,16 @@ A prefix argument means to unmark them instead."
 (use-package diredfl
   :config
   (set-face-attribute 'diredfl-dir-name nil :bold t))
+
+(use-package dired-preview
+  :init
+  (setopt dired-preview-delay 0.2)
+  (setopt dired-preview-kill-buffers-method (cons 'buffer-number 30)))
 #+end_src
 
 *** dirvish
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :tangle no
 (use-package dirvish
   :hook (after-init-hook . dirvish-override-dired-mode)
   :bind
@@ -2696,6 +2700,12 @@ $0`(yas-escape-text yas-selected-text)`")
         (_ nil)))))
 #+end_src
 
+*** oboe
+
+#+begin_src emacs-lisp :lexical t
+(use-package oboe)
+#+end_src
+
 *** insecure-lock
 
 #+begin_src emacs-lisp :lexical t
@@ -2814,8 +2824,8 @@ https://protesilaos.com/emacs/modus-themes
         `(meow-position-highlight-number-1 ((t (:inherit orderless-match-face-1))))
         `(meow-position-highlight-number-2 ((t (:inherit orderless-match-face-2))))
         `(meow-position-highlight-number-3 ((t (:inherit orderless-match-face-3))))
-        ;; dirvish
-        '(dirvish-hl-line ((t (:inherit hl-line))))
+        ;; ;; dirvish
+        ;; '(dirvish-hl-line ((t (:inherit hl-line))))
         ;; mini-echo
         `(window-divider ((t (:foreground ,(doom-color 'base0)))))
         ;; magit
@@ -2964,16 +2974,7 @@ https://protesilaos.com/emacs/modus-themes
         highlight-parentheses-attributes '((:inverse-video t :weight bold))))
 #+end_src
 
-*** highlight-defined
-
-Syntax highlighting of known Elisp symbols
-
-#+begin_src emacs-lisp :lexical t
-(use-package highlight-defined
-  :init (setq highlight-defined-face-use-itself t))
-#+end_src
-
-***
+*** diff-hl
 
 #+begin_src emacs-lisp :lexical t
 (use-package diff-hl
@@ -2981,7 +2982,7 @@ Syntax highlighting of known Elisp symbols
   :init
   (setq diff-hl-draw-borders t
         diff-hl-ask-before-revert-hunk nil
-        diff-hl-update-async t
+        diff-hl-update-async 'thread
         ;; diff-hl-show-staged-changes nil
         diff-hl-side 'left)
   :config
@@ -3966,7 +3967,7 @@ With a prefix argument prompt for the format."
 
 *** dwim-shell-command                                                   :shell:
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :tangle no
 ;; TODO rewrite a shell-enhanced plugin
 (use-package dwim-shell-command
   :commands dwim-shell-command-on-marked-files
@@ -4479,13 +4480,11 @@ If CN is non-nil, search in zh-CN documentation."
               '((python-mode . (ruff isort))
                 (python-ts-mode . (ruff isort))
                 ((sh-mode bash-ts-mode) . shfmt)
-                (d2-ts-mode . d2fmt)
-                (markdown-mode . prettier-markdown)
-                (gfm-mode . prettier-markdown)
                 (ruby-ts-mode . rubocop)
-                (nxml-mode . prettier-html)
-                (js-jsx-mode . prettier-javascript)
-                (tsx-ts-mode . prettier-typescript))))
+                ((html-mode html-ts-mode mhtml-mode mhtml-ts-mode nxml-mode) . biome)
+                ((css-mode css-ts-mode) . biome)
+                ((json-mode js-json-mode json-ts-mode) . biome)
+                ((js-mode js-ts-mode js-jsx-mode typescript-ts-mode tsx-ts-mode) . biome))))
 #+end_src
 
 *** vc                                                                     :git:
@@ -4855,6 +4854,8 @@ Otherwise, behave like `magit-display-buffer-traditional'."
   :bind
   ("M-d" . lsp-bridge-doc-toggle)
   :init
+  ;; fix resize acm frame
+  (setq alter-fullscreen-frames nil)
   (setq lsp-bridge-enable-org-babel t)
   (setq lsp-bridge-python-command (expand-file-name "lsp-bridge/python-lsp-bridge" borg-drones-directory))
   ;; setup language
@@ -5128,7 +5129,7 @@ PROJECT_PATH and FILEPATH is needed."
 
 *** acm
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :tangle yes
 ;; FIXME can not detect frame switch between gui and tui, leads to crash.
 (use-package acm
   :bind
@@ -5383,6 +5384,7 @@ PROJECT_PATH and FILEPATH is needed."
 (use-package elisp-mode
   :hook (emacs-lisp-mode-hook . elisp-mode-setup)
   :init
+  (setopt elisp-fontify-semantically t)
   ;; define imenu regexp for elisp-mode
   (defun elisp-imenu-regexp-generate (item)
     "docstring"
@@ -5449,13 +5451,6 @@ PROJECT_PATH and FILEPATH is needed."
 (use-package lisp-keyword-indent
   :hook (after-init-hook . lisp-keyword-indent-mode)
   :init (setq lisp-indent-function 'lisp-indent-function))
-
-;; add extra font-lock for elisp
-(use-package elispfl
-  :after elisp-mode
-  :config
-  (elispfl-mode)
-  (elispfl-ielm-mode))
 
 (use-package eros
   :hook (after-init-hook . eros-mode))
@@ -5609,6 +5604,65 @@ to define a org presentation like in system craft
         org-hide-emphasis-markers nil)
 
   ;; (setq org-archive-location )
+
+  ;; tangle
+  (defun my/org-babel-toggle-tangle ()
+    "智能切换 :tangle 状态 (yes <-> no)。
+1. 如果本地已有参数：在 yes/no 间切换；如果是文件名则报错。
+2. 如果本地无参数：检查继承的全局属性。
+   - 如果全局是 yes 或文件名 -> 插入 :tangle no (屏蔽全局)
+   - 如果全局是 no 或 nil    -> 插入 :tangle yes (开启)"
+    (interactive)
+    (unless (org-in-src-block-p)
+      (user-error "请在 Org 代码块 (Source Block) 内执行此命令"))
+
+    (save-excursion
+      ;; 1. 获取当前块的完整信息（包含继承的参数）
+      ;; 'light 参数表示不进行繁重的代码求值，只解析 header
+      (let* ((info (org-babel-get-src-block-info 'light))
+             (params (nth 2 info))
+             ;; 获取“实际生效”的 tangle 值 (可能是全局继承下来的)
+             (effective-tangle (cdr (assq :tangle params)))
+             ;; 准备用于本地匹配的 regex
+             (case-fold-search nil)
+             (limit (line-end-position))
+             (regex ":tangle[ \t]+\\(\"?\\(?:[^ \t\n\"]+\\)\"?\\)"))
+
+        ;; 回到头部准备修改文本
+        (org-babel-goto-src-block-head)
+
+        (if (re-search-forward regex limit t)
+            ;; --- 情况 A: 本地显式定义了 :tangle ---
+            (let ((local-val (match-string 1)))
+              (cond
+               ((string= local-val "yes")
+                (replace-match "no" nil nil nil 1)
+                (message "Tangle disabled (:tangle no)"))
+
+               ((string= local-val "no")
+                (replace-match "yes" nil nil nil 1)
+                (message "Tangle enabled (:tangle yes)"))
+
+               ;; 本地指定了文件名，报错保护
+               (t
+                (user-error "操作中止：当前 :tangle 指向了特定文件名 '%s'" local-val))))
+
+          ;; --- 情况 B: 本地没有 :tangle (需要判断全局状态) ---
+          (progn
+            (end-of-line)
+            (if (and effective-tangle
+                     (not (string= effective-tangle "no")))
+                ;; 如果全局是 "yes" 或者 "某文件名.py"
+                ;; 我们的动作应该是：在本地插入 no 来“屏蔽”它
+                (progn
+                  (insert " :tangle no")
+                  (message "Tangle disabled locally (Global was: %s)" effective-tangle))
+
+              ;; 如果全局是 "no" 或者根本没设置 (nil)
+              ;; 我们的动作应该是：在本地插入 yes 来“开启”它
+              (progn
+                (insert " :tangle yes")
+                (message "Tangle enabled locally"))))))))
   :config
   (require 'org-capture)
   (require 'org-agenda)
@@ -5628,6 +5682,7 @@ to define a org presentation like in system craft
 
   ;; (advice-add 'org-edit-src-code :before #'org-indent-block)
   (advice-add 'org-edit-src-exit :before #'my/format)
+
   )
 #+end_src
 
