@@ -34,9 +34,6 @@
 [submodule "browse-at-remote"]
 	path = lib/browse-at-remote
 	url = https://github.com/rmuslimov/browse-at-remote
-[submodule "clojure-mode"]
-	path = lib/clojure-mode
-	url = https://github.com/clojure-emacs/clojure-mode
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql.git
@@ -46,9 +43,6 @@
 [submodule "colorful-mode"]
 	path = lib/colorful-mode
 	url = https://github.com/DevelopmentCool2449/colorful-mode.git
-[submodule "combobulate"]
-	path = lib/combobulate
-	url = https://github.com/mickeynp/combobulate
 [submodule "compat"]
 	path = lib/compat
 	url = https://github.com/emacs-compat/compat.git
@@ -100,23 +94,12 @@
 [submodule "diredfl"]
 	path = lib/diredfl
 	url = https://github.com/purcell/diredfl
-[submodule "dirvish"]
-	path = lib/dirvish
-	url = https://github.com/alexluigit/dirvish
-	load-path = .
-	load-path = extensions
 [submodule "duplexer"]
 	path = lib/duplexer
 	url = https://github.com/eki3z/duplexer.el
-[submodule "dwim-shell-command"]
-	path = lib/dwim-shell-command
-	url = https://github.com/xenodium/dwim-shell-command
 [submodule "easy-escape"]
 	path = lib/easy-escape
 	url = https://github.com/cpitclaudel/easy-escape
-[submodule "easysession"]
-	path = lib/easysession
-	url = https://github.com/jamescherti/easysession.el
 [submodule "edit-indirect"]
 	path = lib/edit-indirect
 	url = https://github.com/Fanael/edit-indirect
@@ -132,9 +115,6 @@
 [submodule "elisp-refs"]
 	path = lib/elisp-refs
 	url = https://github.com/Wilfred/elisp-refs
-[submodule "elispfl"]
-	path = lib/elispfl
-	url = https://github.com/cireu/elispfl.git
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = https://github.com/skeeto/emacsql.git
@@ -220,9 +200,6 @@
 [submodule "hide-mode-line"]
 	path = lib/hide-mode-line
 	url = https://github.com/hlissner/emacs-hide-mode-line
-[submodule "highlight-defined"]
-	path = lib/highlight-defined
-	url = https://github.com/Fanael/highlight-defined
 [submodule "highlight-parentheses"]
 	path = lib/highlight-parentheses
 	url = https://git.sr.ht/~tsdh/highlight-parentheses.el
@@ -346,6 +323,9 @@
 [submodule "no-littering"]
 	path = lib/no-littering
 	url = https://github.com/emacscollective/no-littering
+[submodule "oboe"]
+	path = lib/oboe
+	url = https://github.com/gynamics/oboe.el
 [submodule "obvious"]
 	path = lib/obvious
 	url = https://github.com/emacsmirror/csv-mode.git
@@ -491,9 +471,6 @@
 [submodule "treesit-fold"]
 	path = lib/treesit-fold
 	url = https://github.com/emacs-tree-sitter/treesit-fold
-[submodule "ts-docstr"]
-	path = lib/ts-docstr
-	url = https://github.com/emacs-vs/ts-docstr.git
 [submodule "undo-fu-session"]
 	path = lib/undo-fu-session
 	url = https://codeberg.org/ideasman42/emacs-undo-fu-session
