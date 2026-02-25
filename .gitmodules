@@ -34,6 +34,9 @@
 [submodule "browse-at-remote"]
 	path = lib/browse-at-remote
 	url = https://github.com/rmuslimov/browse-at-remote
+[submodule "cape"]
+	path = lib/cape
+	url = https://github.com/minad/cape
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql.git
@@ -55,6 +58,9 @@
 [submodule "consult-dir"]
 	path = lib/consult-dir
 	url = https://github.com/karthink/consult-dir
+[submodule "consult-eglot"]
+	path = lib/consult-eglot
+	url = https://github.com/mohkale/consult-eglot
 [submodule "consult-todo"]
 	path = lib/consult-todo
 	url = https://github.com/eki3z/consult-todo
@@ -64,6 +70,14 @@
 [submodule "copy-as-format"]
 	path = lib/copy-as-format
 	url = https://github.com/sshaw/copy-as-format
+[submodule "corfu"]
+	path = lib/corfu
+	load-path = .
+	load-path = extensions
+	url = https://github.com/minad/corfu
+[submodule "corfu-terminal"]
+	path = lib/corfu-terminal
+	url = https://codeberg.org/akib/emacs-corfu-terminal
 [submodule "csv-mode"]
 	path = lib/csv-mode
 	url = https://github.com/emacsmirror/csv-mode.git
@@ -143,9 +157,6 @@
 [submodule "file-info"]
 	path = lib/file-info
 	url = https://github.com/Artawower/file-info.el
-[submodule "flymake-bridge"]
-	path = lib/flymake-bridge
-	url = https://github.com/eki3z/flymake-bridge.git
 [submodule "flymake-collection"]
 	path = lib/flymake-collection
 	url = https://github.com/mohkale/flymake-collection
@@ -269,12 +280,6 @@
 [submodule "logos"]
 	path = lib/logos
 	url = https://github.com/protesilaos/logos
-[submodule "lsp-bridge"]
-	path = lib/lsp-bridge
-	url = https://github.com/manateelazycat/lsp-bridge
-	build-step = borg-update-autoloads
-	load-path = .
-	load-path = acm
 [submodule "macrostep"]
 	path = lib/macrostep
 	url = https://github.com/emacsorphanage/macrostep
@@ -317,6 +322,9 @@
 [submodule "nerd-icons-completion"]
 	path = lib/nerd-icons-completion
 	url = https://github.com/rainstormstudio/nerd-icons-completion
+[submodule "nerd-icons-corfu"]
+	path = lib/nerd-icons-corfu
+	url = https://github.com/LuigiPiucco/nerd-icons-corfu
 [submodule "nerd-icons-ibuffer"]
 	path = lib/nerd-icons-ibuffer
 	url = https://github.com/seagle0128/nerd-icons-ibuffer
