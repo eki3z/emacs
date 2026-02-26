@@ -160,6 +160,9 @@
 [submodule "flash"]
 	path = lib/flash
 	url = https://github.com/Prgebish/flash
+[submodule "flymake-bridge"]
+	path = lib/flymake-bridge
+	url = https://github.com/eki3z/flymake-bridge.git
 [submodule "flymake-collection"]
 	path = lib/flymake-collection
 	url = https://github.com/mohkale/flymake-collection
@@ -283,6 +286,12 @@
 [submodule "logos"]
 	path = lib/logos
 	url = https://github.com/protesilaos/logos
+[submodule "lsp-bridge"]
+	path = lib/lsp-bridge
+	url = https://github.com/manateelazycat/lsp-bridge
+	build-step = borg-update-autoloads
+	load-path = .
+	load-path = acm
 [submodule "macrostep"]
 	path = lib/macrostep
 	url = https://github.com/emacsorphanage/macrostep
