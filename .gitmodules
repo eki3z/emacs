@@ -157,6 +157,9 @@
 [submodule "file-info"]
 	path = lib/file-info
 	url = https://github.com/Artawower/file-info.el
+[submodule "flash"]
+	path = lib/flash
+	url = https://github.com/Prgebish/flash
 [submodule "flymake-collection"]
 	path = lib/flymake-collection
 	url = https://github.com/mohkale/flymake-collection
@@ -286,6 +289,9 @@
 [submodule "magit"]
 	path = lib/magit
 	url = https://github.com/magit/magit
+[submodule "magit-gh"]
+	path = lib/magit-gh
+	url = https://github.com/jonathanchu/magit-gh
 [submodule "marginalia"]
 	path = lib/marginalia
 	url = https://github.com/minad/marginalia
