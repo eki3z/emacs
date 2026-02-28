@@ -2,7 +2,7 @@
 
 # library for emacsclient functionality
 
-emacsclient::ensure_running() {
+emacsclient_ensure_running() {
   if command -v emacs >/dev/null 2>&1 && command -v emacsclient >/dev/null 2>&1; then
     emacsclient -u -a "" -e "(server-running-p)" 2>/dev/null
   else
@@ -12,7 +12,7 @@ emacsclient::ensure_running() {
 }
 
 # SEE https://www.emacswiki.org/emacs/EmacsPipe
-emacsclient::pipe_detect() {
+emacsclient_pipe_detect() {
   if [ "$#" -eq 1 ] && [ "$1" = "-" ]; then
     mkdir -p /tmp/epipe
     EPIPE=$(mktemp "/tmp/epipe/$(date +%m%d-%H%M%S)-XXX")
@@ -22,7 +22,7 @@ emacsclient::pipe_detect() {
   fi
 }
 
-emacsclient::gui_frame_length() {
+emacsclient_gui_frame_length() {
   emacsclient -q -e \
     "(length (seq-filter (lambda (f)
                       (and (frame-parameter f 'display)
@@ -30,8 +30,8 @@ emacsclient::gui_frame_length() {
                     (frame-list)))" 2>/dev/null
 }
 
-emacsclient::gui_open() {
-  emacsclient::pipe_detect "$@"
+emacsclient_gui_open() {
+  emacsclient_pipe_detect "$@"
   if [ "$#" -eq 0 ]; then
     emacsclient -u -e "(select-frame-set-input-focus (selected-frame))"
   else
@@ -43,8 +43,8 @@ emacsclient::gui_open() {
   fi
 }
 
-emacsclient::tui_open() {
-  emacsclient::pipe_detect "$@"
+emacsclient_tui_open() {
+  emacsclient_pipe_detect "$@"
   if [ -n "${EPIPE:-}" ]; then
     emacsclient -q -t "$EPIPE"
   else
@@ -52,6 +52,6 @@ emacsclient::tui_open() {
   fi
 }
 
-emacsclient::tui_eval() {
+emacsclient_tui_eval() {
   emacsclient -q -t -e "$@"
 }

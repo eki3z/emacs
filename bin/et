@@ -6,5 +6,5 @@ set -eu
 
 . "$(cd -- "$(dirname -- "$0")" >/dev/null 2>&1 && pwd)/_emacsclient.sh"
 
-emacsclient::ensure_running
-emacsclient::tui_open "$@"
+emacsclient_ensure_running
+emacsclient_tui_open "$@"
