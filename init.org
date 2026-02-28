@@ -838,16 +838,7 @@ Same as `replace-string C-q C-m RET RET'."
 
 *** hooks
 
-define hooks for frames
 #+begin_src emacs-lisp :lexical t
-
-;; (defvar after-load-theme-hook nil
-;;   "Hook run after a color theme is loaded using `load-theme'.")
-;; (defun run-after-load-theme-hook (&rest _)
-;;   "Run `after-load-theme-hook'."
-;;   (run-hooks 'after-load-theme-hook))
-;; (advice-add #'load-theme :after #'run-after-load-theme-hook)
-
 (defun av/update-frame-title-foreground (theme &rest _)
   "Advice for update frame tile foreground when load THEME."
   (when (featurep 'ns)
@@ -1573,7 +1564,7 @@ make sure emacs server running
 #+begin_src emacs-lisp :lexical t
 (use-package eldoc
   :init
-  (setq eldoc-idle-delay 0.3))
+  (setq eldoc-idle-delay 1.0))
 #+end_src
 
 *** xwidget
@@ -2183,14 +2174,6 @@ A prefix argument means to unmark them instead."
                '(jinx grid (vertico-grid-annotate . 20)))
   (vertico-multiform-mode 1)
 
-  ;; SEE https://github.com/minad/vertico/wiki#prefix-current-candidate-with-arrow
-  (defun ad/vertico-customize-candidate (orig cand prefix suffix index _start)
-    (concat (if (= vertico--index index)
-                (propertize "> " 'face 'font-lock-warning-face)
-              "  ")
-            (funcall orig cand prefix suffix index _start)))
-  (advice-add 'vertico--format-candidate :around #'ad/vertico-customize-candidate)
-
   ;; SEE https://github.com/minad/vertico/wiki#left-truncate-recentf-filename-candidates-eg-for-consult-buffer
   (defun my/vertico-truncate-candidates (args)
     (if-let* ((arg (car args))
@@ -2202,6 +2185,20 @@ A prefix argument means to unmark them instead."
         (setcar args (concat ".." (truncate-string-to-width arg l (- l w)))))
     args)
   (advice-add #'vertico--format-candidate :filter-args #'my/vertico-truncate-candidates)
+
+  ;; SEE https://github.com/minad/vertico/wiki#input-at-bottom-of-completion-list
+  (defun vertico-bottom--display-candidates (lines)
+    "Display lines in bottom."
+    (move-overlay vertico--candidates-ov (point-min) (point-min))
+    (unless (eq vertico-resize t)
+      (setq lines (nconc (make-list (max 0 (- vertico-count (length lines))) "\n") lines)))
+    (let ((string (apply #'concat lines)))
+      (add-face-text-property 0 (length string) 'default 'append string)
+      (overlay-put vertico--candidates-ov 'before-string string)
+      (overlay-put vertico--candidates-ov 'after-string nil))
+    (vertico--resize-window (length lines)))
+  (advice-add #'vertico--display-candidates :override #'vertico-bottom--display-candidates)
+
   )
 #+end_src
 
@@ -2230,25 +2227,23 @@ A prefix argument means to unmark them instead."
   (setq completion-styles '(orderless basic))
   (setq orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-category-defaults nil)
+  (setq completion-pcm-leading-wildcard t)
 
   (orderless-define-completion-style
-      my/orderless-mix
+      my/orderless-vertico
     (orderless-matching-styles '(orderless-initialism
                                  orderless-literal
                                  orderless-regexp)))
+  (orderless-define-completion-style
+      my/orderless-corfu
+    (orderless-style-dispatchers nil)
+    (orderless-matching-styles '(orderless-literal-prefix orderless-literal orderless-flex)))
+
   (setq completion-category-overrides
         '((file     (styles partial-completion))
-          (command  (styles my/orderless-mix))
-          (variable (styles my/orderless-mix))
-          (symbol   (styles my/orderless-mix))))
-
-  ;; (with-eval-after-load 'consult
-  ;;   (defun consult--orderless-regexp-compiler (input type &rest _config)
-  ;;     (setq input (cdr (orderless-compile input)))
-  ;;     (cons
-  ;;      (mapcar (lambda (r) (consult--convert-regexp r type)) input)
-  ;;      (lambda (str) (orderless--highlight input t str))))
-  ;;   (setq consult--regexp-compiler #'consult--orderless-regexp-compiler))
+          (command  (styles my/orderless-vertico))
+          (variable (styles my/orderless-vertico))
+          (symbol   (styles my/orderless-vertico))))
 
   (with-eval-after-load 'pinyinlib
     (defun ad/orderless-regexp-pinyin (args)
@@ -2256,6 +2251,48 @@ A prefix argument means to unmark them instead."
       (setf (car args) (pinyinlib-build-regexp-string (car args)))
       args)
     (advice-add 'orderless-regexp :filter-args #'ad/orderless-regexp-pinyin)))
+#+end_src
+
+*** corfu
+
+#+begin_src emacs-lisp :lexical t :tangle no
+(use-package corfu
+  :hook (corfu-mode-hook . corfu-setup)
+  :bind
+  (:map corfu-mode-map
+   ("M-h" . corfu-popupinfo-toggle))
+  :init
+  ;; (setopt tab-always-indent 'complete)
+  (setq corfu-count 15
+        corfu-scroll-margin 1
+        corfu-cycle t
+        ;; corfu-on-exact-match nil
+        corfu-quit-no-match 'separator)
+  (setq corfu-auto t
+        corfu-auto-trigger "."
+        corfu-auto-prefix 1
+        corfu-auto-delay 0.1)
+  (setq corfu-popupinfo-delay '(nil . 0.1))
+  (global-corfu-mode)
+  (defun corfu-setup ()
+    (setq-local completion-styles '(my/orderless-corfu basic)
+                completion-category-overrides nil
+                completion-category-defaults nil)
+    (corfu-history-mode)
+    (corfu-popupinfo-mode))
+  :config
+
+  (use-package nerd-icons-corfu
+    :demand t
+    :config
+    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+  (use-package cape
+    :demand t
+    :bind ("C-c p" . cape-prefix-map)
+    :config
+    (setq completion-at-point-functions (list 'cape-dabbrev 'cape-file)))
+  )
 #+end_src
 
 *** consult                                                         :minibuffer:
@@ -2729,7 +2766,7 @@ No changes in mode-line."
 
 *** page-break-lines
 
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :tangle no
 (use-package page-break-lines
   :hook (after-init-hook . global-page-break-lines-mode)
   :init
@@ -2744,6 +2781,11 @@ https://protesilaos.com/emacs/modus-themes
 (require-theme 'modus-themes)
 (setq modus-themes-common-palette-overrides
       '((fringe unspecified)
+        ;; (mini-echo-blue blue-warmer)
+        ;; (mini-echo-yellow yellow)
+        ;; (mini-echo-magenta magenta)
+        ;; (mini-echo-blue blue-warmer)
+        ;; (mini-echo-blue blue-warmer)
         ;; (transient-key-stay red)
         ;; (transient-key-exit green)
         ;; (transient-key-return yellow)
@@ -2755,133 +2797,6 @@ https://protesilaos.com/emacs/modus-themes
 
 ;; (add-hook 'modus-themes-after-load-theme-hook #'modus-vivendi-setup)
 (modus-themes-load-theme 'modus-vivendi-tinted)
-#+end_src
-
-#+begin_src emacs-lisp :lexical t :tangle no
-(use-package doom-themes
-  :demand t
-  :config
-  (load-theme 'doom-tokyo-night t)
-  :init
-  (advice-add 'load-theme :after #'av/doom-theme-customize)
-  (defun av/doom-theme-customize (&rest _)
-    (pcase (car custom-enabled-themes)
-      ('doom-tokyo-night
-       (custom-set-faces
-        `(font-lock-constant-face ((t (:foreground ,(doom-color 'red)))))
-        `(font-lock-builtin-face ((t (:foreground ,(doom-color 'orange)))))
-        `(font-lock-delimiter-face ((t (:foreground ,(doom-color 'base3)))))
-        `(font-lock-number-face ((t (:foreground ,(doom-color 'yellow)))))
-        `(font-lock-type-face ((t (:foreground ,(doom-color 'yellow) :bold t))))
-        `(font-lock-property-name-face ((t (:foreground ,(doom-color 'teal)))))
-        `(font-lock-variable-name-face ((t (:foreground ,(doom-color 'dark-cyan)))))
-        `(font-lock-escape-face ((t (:foreground ,(doom-color 'magenta) :bold t))))
-        ;; `(font-lock-punctuation-face ((t (:foreground ,(doom-color 'red)))))
-        ;; `(font-lock-misc-punctuation-face ((t (:foreground ,(doom-color 'red)))))
-        `(font-lock-regexp-face ((t (:foreground ,(doom-lighten (doom-color 'green) 0.8)))))
-        `(secondary-selection ((t (:background ,(doom-darken (doom-color 'violet) 0.7)))))
-        `(link ((t (:foreground ,(doom-color 'dark-cyan) :bold nil))))
-        `(hl-line ((t (:background ,(doom-darken (doom-color 'blue) 0.75)))))
-        `(line-number ((t (:italic nil))))
-        `(line-number-current-line ((t (:italic nil))))
-        ;;consult
-        '(consult-file         ((t (:inherit font-lock-doc-face))))
-        '(consult-imenu-prefix ((t (:inherit font-lock-doc-face :slant italic))))
-        ;; vertico
-        `(vertico-current ((t (:background ,(doom-darken (doom-color 'blue) 0.7) :extend t))))
-        ;;diff-hl
-        `(diff-hl-change ((t (:background unspecified
-                              :inverse-video nil
-                              :italic nil))))
-        `(diff-hl-insert ((t (:background unspecified
-                              :inverse-video nil
-                              :italic nil))))
-        `(diff-hl-delete ((t (:background unspecified
-                              :inverse-video nil
-                              :italic nil))))
-        ;; transient
-        `(transient-key-exit ((t (:foreground ,(doom-color 'yellow)))))
-        `(transient-key-stay ((t (:foreground ,(doom-color 'green)))))
-        `(transient-key-return ((t (:foreground ,(doom-color 'violet)))))
-        ;; mini-echo
-        `(mini-echo-red ((t (:foreground ,(doom-color 'red)))))
-        `(mini-echo-green ((t (:foreground ,(doom-color 'green)))))
-        `(mini-echo-yellow ((t (:foreground ,(doom-color 'yellow)))))
-        `(mini-echo-blue ((t (:foreground ,(doom-color 'blue)))))
-        `(mini-echo-magenta ((t (:foreground ,(doom-color 'magenta)))))
-        `(mini-echo-cyan ((t (:foreground ,(doom-color 'cyan)))))
-        `(mini-echo-gray ((t (:foreground ,(doom-color 'dark-blue)))))
-        ;; meow
-        `(meow-normal-indicator   ((t (:foreground ,(doom-color 'blue) :bold t))))
-        `(meow-insert-indicator   ((t (:foreground ,(doom-color 'green) :bold t))))
-        `(meow-motion-indicator   ((t (:foreground ,(doom-color 'red) :bold t))))
-        `(meow-keypad-indicator   ((t (:foreground ,(doom-color 'magenta) :bold t))))
-        `(meow-beacon-indicator   ((t (:foreground ,(doom-color 'yellow) :bold t))))
-        `(meow-search-indicator   ((t (:foreground ,(doom-color 'cyan) :bold t))))
-        `(meow-beacon-fake-cursor ((t (:foreground ,(doom-color 'bg)
-                                       :background ,(doom-blend 'yellow 'bg 0.7)
-                                       :bold t))))
-        `(meow-position-highlight-number-1 ((t (:inherit orderless-match-face-1))))
-        `(meow-position-highlight-number-2 ((t (:inherit orderless-match-face-2))))
-        `(meow-position-highlight-number-3 ((t (:inherit orderless-match-face-3))))
-        ;; ;; dirvish
-        ;; '(dirvish-hl-line ((t (:inherit hl-line))))
-        ;; mini-echo
-        `(window-divider ((t (:foreground ,(doom-color 'base0)))))
-        ;; magit
-        `(magit-blame-dimmed ((t (:foreground ,(doom-color 'bg)))))
-        `(magit-blame-margin ((t (:foreground ,(doom-blend 'blue 'fg 0.6)
-                                  :background ,(doom-blend 'blue 'bg 0.1)
-                                  :bold t))))
-        ;; md-ts-mode
-        `(md-ts-code-block ((t (:background ,(doom-darken 'base2 0.65)
-                                :extend t))))
-        `(org-block            ((t (:background ,(doom-blend 'bg 'base3 0.95)))))
-        `(org-block-begin-line ((t (:background ,(doom-blend 'bg 'base3 0.95)
-                                    :foreground ,(doom-color 'doc-comments)
-                                    :extend t))))
-        `(org-ellipsis         ((t (:background ,(doom-color 'bg) :bold t))))
-
-        ;; combobulate
-        '(combobulate-refactor-highlight-face ((t (:background unspecified))))
-        `(combobulate-refactor-label-face ((t (:foreground ,(doom-color 'bg)
-                                               :background ,(doom-blend 'cyan 'bg 0.7)
-                                               :bold t))))
-        `(combobulate-active-indicator-face ((t (:foreground ,(doom-blend 'cyan 'bg 0.7)
-                                                 :bold t))))
-        ;; web-mode
-        `(web-mode-html-tag-bracket-face ((t (:foreground ,(doom-color 'dark-blue)))))
-        `(web-mode-html-entity-face ((t (:italic nil :foreground ,(doom-color 'teal)))))
-        `(web-mode-current-element-highlight-face
-          ((t (:weight bold :background ,(doom-blend 'cyan 'bg 0.15)))))
-        `(web-mode-current-column-highlight-face  ((t (:background ,(doom-color 'base4)
-                                                       :foreground unspecified))))
-        ;; orderless
-        `(orderless-match-face-0 ((t (:underline t))))
-        `(orderless-match-face-1 ((t (:underline t))))
-        `(orderless-match-face-2 ((t (:underline t))))
-        `(orderless-match-face-3 ((t (:underline t))))
-        ;;rg.el
-        `(rg-match-face ((t (:inherit orderless-match-face-2))))
-        `(rg-info-face        ((t (:foreground ,(doom-color 'red)))))
-        `(rg-filename-face    ((t (:foreground ,(doom-color 'blue) :underline t))))
-        `(rg-line-number-face ((t (:foreground ,(doom-color 'yellow)))))
-        `(rg-file-tag-face ((t (:foreground ,(doom-color 'magenta)))))
-        ;; wgrep
-        `(wgrep-face ((t (:foreground ,(doom-color 'yellow)
-                          :background unspecified
-                          :bold nil))))
-        `(wgrep-delete-face ((t (:foreground ,(doom-color 'red)
-                                 :background unspecified
-                                 :strike-through t))))
-        `(rainbow-delimiters-depth-1-face ((t (:foreground ,(doom-color 'blue)))))
-        `(rainbow-delimiters-depth-2-face ((t (:foreground ,(doom-color 'yellow)))))
-        `(rainbow-delimiters-depth-3-face ((t (:foreground ,(doom-color 'magenta)))))
-        `(rainbow-delimiters-depth-4-face ((t (:foreground ,(doom-color 'teal)))))
-        `(rainbow-delimiters-depth-5-face ((t (:foreground ,(doom-color 'red)))))
-        `(which-key-note-face ((t (:foreground ,(doom-color 'yellow)))))
-        ))))
-  )
 #+end_src
 
 *** hl-todo                                                     :todo:highlight:
@@ -4381,67 +4296,6 @@ If CN is non-nil, search in zh-CN documentation."
     (browse-url (concat "https://cheatsheets.zip/" (if cn (concat "zh-CN/docs/" ref ".html") ref)))))
 #+end_src
 
-*** flymake
-
-#+begin_src emacs-lisp :lexical t
-(use-package flymake
-  :hook ((prog-mode-hook
-          markdown-mode-hook
-          yaml-ts-mode-hook
-          web-vue-mode-hook) . flymake-setup)
-  :init
-  (defun flymake-setup ()
-    (unless (eq major-mode 'envrc-file-mode)
-      (flymake-mode 1)))
-  (setq flymake-indicator-type nil
-        flymake-margin-indicator-position nil
-        flymake-fringe-indicator-position nil
-        flymake-no-changes-timeout 20))
-
-;; (use-package flyover
-;;   :hook (flymake-mode-hook . flyover-mode)
-;;   :init
-;;   (setq flyover-checkers '(flymake)))
-
-;; REQUIRE
-;; pip install yamllint
-;; brew install shellcheck tidy-html5 jq
-;; luarocks install luacheck
-;; npm install -g less
-(use-package flymake-collection
-  :hook (after-init-hook . flymake-collection-hook-setup)
-  :init
-  (setq flymake-collection-hook-config
-        '(((python-ts-mode python-mode) .
-           (flymake-collection-ruff (python-flymake :disabled t)))
-          ((sh-mode bash-ts-mode) .
-           (flymake-collection-shellcheck (sh-shellcheck-flymake :disabled t)))
-          ((js-mode js-ts-mode typescript-ts-mode js-jsx-mode tsx-ts-mode web-vue-mode) .
-           (flymake-collection-eslint))
-          ((json-mode json-ts-mode) flymake-collection-jq)
-          ((yaml-mode yaml-ts-mode) flymake-collection-yamllint)
-          ;; REQUIRE brew install tidy-html5
-          ((web-mode html-ts-mode mhtml-mode html-mode) flymake-collection-html-tidy)
-          (c-ts-mode flymake-collection-clang)
-          ((lua-mode lua-ts-mode) flymake-collection-luacheck)
-          ((ruby-mode ruby-ts-mode) flymake-collection-rubocop)
-          (sql-mode flymake-collection-sql-lint)
-          (nxml-mode flymake-collection-xmllint)
-          (less-mode flymake-collection-less))))
-
-(use-package flymake-collection-clang
-  :config
-  (appendq! flymake-collection-clang-args '("-Wno-gnu")))
-
-(use-package relint)
-
-(use-package flymake-relint
-  :hook ((emacs-lisp-mode-hook lisp-interaction-mode-hook) . flymake-relint-setup))
-
-(use-package flymake-bridge
-  :hook (lsp-bridge-mode-hook . flymake-bridge-setup))
-#+end_src
-
 *** editorconfig                                                        :format:
 
 #+begin_src emacs-lisp :lexical t
@@ -4454,7 +4308,7 @@ If CN is non-nil, search in zh-CN documentation."
 
 #+begin_src emacs-lisp :lexical t
 (use-package apheleia
-  :hook ((typescript-ts-mode-hook js-ts-mode-hook python-ts-mode-hook)
+  :hook ((typescript-ts-mode-hook js-ts-mode-hook python-ts-mode-hook bash-ts-mode-hook)
          . apheleia-mode)
   :init
   (setq apheleia-hide-log-buffers t)
@@ -4477,14 +4331,15 @@ If CN is non-nil, search in zh-CN documentation."
               '((shfmt . ("shfmt" "-i" "2" "-bn" "-ci"))
                 (stylua . ("stylua" "--search-parent-directories" "-"))))
   (alist-set! apheleia-mode-alist
-              '((python-mode . (ruff isort))
-                (python-ts-mode . (ruff isort))
-                ((sh-mode bash-ts-mode) . shfmt)
-                (ruby-ts-mode . rubocop)
-                ((html-mode html-ts-mode mhtml-mode mhtml-ts-mode nxml-mode) . biome)
-                ((css-mode css-ts-mode) . biome)
-                ((json-mode js-json-mode json-ts-mode) . biome)
-                ((js-mode js-ts-mode js-jsx-mode typescript-ts-mode tsx-ts-mode) . biome))))
+              '((python-mode . (ruff ruff-isort))
+                (python-ts-mode . (ruff ruff-isort))
+                (bash-ts-mode . shfmt)
+                ;; (ruby-ts-mode . rubocop)
+                ;; ((html-mode html-ts-mode mhtml-mode mhtml-ts-mode nxml-mode) . biome)
+                ;; ((css-mode css-ts-mode) . biome)
+                ;; ((json-mode js-json-mode json-ts-mode) . biome)
+                ;; ((js-mode js-ts-mode js-jsx-mode typescript-ts-mode tsx-ts-mode) . biome)
+                )))
 #+end_src
 
 *** vc                                                                     :git:
@@ -4844,9 +4699,174 @@ Otherwise, behave like `magit-display-buffer-traditional'."
        #'find-file))))
 #+end_src
 
-*** lsp-bridge
+*** flymake
 
 #+begin_src emacs-lisp :lexical t
+(use-package flymake
+  :hook ((prog-mode-hook
+          markdown-mode-hook
+          yaml-ts-mode-hook
+          web-vue-mode-hook) . flymake-setup)
+  :init
+  (defun flymake-setup ()
+    (unless (eq major-mode 'envrc-file-mode)
+      (flymake-mode 1)))
+  (setopt flymake-indicator-type nil
+          flymake-margin-indicator-position nil
+          flymake-fringe-indicator-position nil
+          flymake-suppress-zero-counters nil
+          flymake-no-changes-timeout 20)
+  :config
+  ;; HACK remove ! before flymake overlay
+  (put 'flymake-error 'before-string "")
+  (put 'flymake-warning 'before-string "")
+  (put 'flymake-note 'before-string ""))
+
+;; REQUIRE
+;; pip install yamllint
+;; brew install shellcheck tidy-html5 jq
+;; luarocks install luacheck
+;; npm install -g less
+(use-package flymake-collection
+  :hook (after-init-hook . flymake-collection-hook-setup)
+  :init
+  (setq flymake-collection-hook-config
+        '(((python-ts-mode python-mode) .
+           (flymake-collection-ruff (python-flymake :disabled t)))
+          ((sh-mode bash-ts-mode) .
+           (flymake-collection-shellcheck (sh-shellcheck-flymake :disabled t)))
+          ((js-mode js-ts-mode typescript-ts-mode js-jsx-mode tsx-ts-mode web-vue-mode) .
+           (flymake-collection-eslint))
+          ((json-mode json-ts-mode) flymake-collection-jq)
+          ((yaml-mode yaml-ts-mode) flymake-collection-yamllint)
+          ;; REQUIRE brew install tidy-html5
+          ((web-mode html-ts-mode mhtml-mode html-mode) flymake-collection-html-tidy)
+          (c-ts-mode flymake-collection-clang)
+          ((lua-mode lua-ts-mode) flymake-collection-luacheck)
+          ((ruby-mode ruby-ts-mode) flymake-collection-rubocop)
+          (sql-mode flymake-collection-sql-lint)
+          (nxml-mode flymake-collection-xmllint)
+          (less-mode flymake-collection-less))))
+
+(use-package flymake-collection-clang
+  :config
+  (appendq! flymake-collection-clang-args '("-Wno-gnu")))
+
+(use-package relint)
+
+(use-package flymake-bridge
+  :hook (lsp-bridge-mode-hook . flymake-bridge-setup))
+
+(use-package flymake-relint
+  :hook ((emacs-lisp-mode-hook lisp-interaction-mode-hook) . flymake-relint-setup))
+#+end_src
+
+*** eglot
+
+#+begin_src emacs-lisp :lexical t :tangle no
+(use-package eglot
+  :hook ((bash-ts-mode-hook python-ts-mode-hook js-ts-mode-hook typescript-ts-mode-hook
+                            css-mode-hook css-ts-mode-hook)
+         . eglot-ensure)
+  :init
+  (setq eglot-autoshutdown t
+        eglot-code-action-indications '(mode-line eldoc-hint)
+        eglot-code-action-indicator "A")
+  (setq eglot-mode-line-format
+        '(eglot-mode-line-menu
+          eglot-mode-line-error
+          eglot-mode-line-pending-requests
+          eglot-mode-line-progress
+          eglot-mode-line-action-suggestion))
+
+  (setq-default eglot-workspace-configuration
+                '(:ty
+                  (:diagnosticMode "workspace")
+                  :ruff
+                  (:configuration ,(expand-file-name "~/dotfiles/ruff.toml")
+                   :configurationPreference "filesystemFirst"
+                   :format (:preview t))
+                  :css
+                  (:enable t
+                   ;; :completion (:triggerPropertyValueCompletion t
+                   ;;              :completePropertyWithSemicolon t)
+                   :validate t
+                   ;; :hover (:documentation :json-false
+                   ;;         :reference :json-false)
+                   :lint (:compatibleVendorPrefixes "ignore"
+                          :vendorPrefix "warning"
+                          :duplicateProperties "warning"
+                          :emptyRules "warning"
+                          :importStatement "ignore"
+                          :boxMode "ignore"
+                          :universalSelector "ignore"
+                          :zeroUnits "ignore"
+                          :fontFaceProperties "warning"
+                          :hexColorLength "error"
+                          :argumentsInColorFunction "error"
+                          :unknownProperties "warning"
+                          :validProperties []
+                          :ieHack "ignore"
+                          :unknownVendorSpecificProperties "ignore"
+                          :propertyIgnoreDueToDisplay "warning"
+                          :important "ignore"
+                          :float "ignore"
+                          :idSelector "ignore"
+                          :unknownAtRules "warning")
+                   :format (:enable t
+                            :newlineBetweenSelectors t
+                            :newlineBetweenRules t
+                            :spaceAroundSelectorSeparator :json-false
+                            :braceStyle "collapse"
+                            :preserveNewLines t
+                            :maxPreserveNewLines nil))
+                  :yaml
+                  (:format
+                   (:enable t :singleQuote nil :bracketSpacing t)
+                   :validate t
+                   :hover t
+                   :completion t)
+                  :json
+                  (:format (:enable t))
+                  :eslint
+                  (:format (:enable t))))
+
+  :config
+  ;; TODO implement this function
+  (defun my/eglot-multiserver-detect (interactive-p)
+    "Detect and return multi server command when INTERACTIVE-P is nil."
+    (unless interactive-p
+      (let* ((project (project-root (eglot--current-project)))
+             (emmet-p (and (executable-find "emmet-ls")
+                           (list "--" "emmet-ls" "--stdio")))
+             (tailwindcss-p
+              (and (executable-find "tailwindcss-language-server")
+                   (file-directory-p project)
+                   (or (directory-files
+                        project
+                        nil
+                        "tailwind\\.config\\.[m|c]?[j|t]s\\'")
+                       (file-directory-p (expand-file-name "node_modules/tailwindcss" project)))
+                   (list "--" "tailwindcss-language-server" "--stdio")))
+             (eslint-p
+              (and (executable-find "vscode-eslint-language-server")
+                   (file-directory-p project)))
+             server)
+        (when (memq major-mode '(css-mode css-ts-mode))
+          (-concat (list "rass" "--" "vscode-css-language-server" "--stdio") emmet-p tailwindcss-p)))))
+
+  (prependq! eglot-server-programs
+             `(((python-mode python-ts-mode) . ("rass" "python"))
+               ;; ((html-mode html-ts-mode mhtml-mode css-mode css-ts-mode)
+               ;;  . my/eglot-multiserver-detect)
+               ))
+
+  )
+#+end_src
+
+*** lsp-bridge
+
+#+begin_src emacs-lisp :lexical t :tangle yes
 (use-package lsp-bridge
   :hook
   (after-init-hook . global-lsp-bridge-mode)
@@ -4854,11 +4874,12 @@ Otherwise, behave like `magit-display-buffer-traditional'."
   :bind
   ("M-d" . lsp-bridge-doc-toggle)
   :init
-  ;; fix resize acm frame
-  (setq alter-fullscreen-frames nil)
   (setq lsp-bridge-enable-org-babel t)
   (setq lsp-bridge-python-command (expand-file-name "lsp-bridge/python-lsp-bridge" borg-drones-directory))
+  ;; fix resize acm frame
+  (setq alter-fullscreen-frames nil)
   ;; setup language
+  (setq lsp-bridge-python-lsp-server "ty")
   (setq lsp-bridge-lua-lsp-server "sumneko")
   (setq lsp-bridge-c-lsp-server "clangd")
   ;; Setup tsdk path in volar.json
@@ -4907,6 +4928,79 @@ Otherwise, behave like `magit-display-buffer-traditional'."
               js-json-mode-hook
               moonbit-mode-hook
               web-vue-mode)))
+
+;; FIXME can not detect frame switch between gui and tui, leads to crash.
+(use-package acm
+  :bind
+  (:map acm-mode-map
+   ("C-j" . nil)
+   ("C-k" . nil)
+   ;; ("C-;" . acm-switch-templates)
+   )
+  :init
+  (setq acm-enable-quick-access nil
+        acm-enable-tabnine nil
+        acm-enable-doc nil)
+  (setq acm-candidate-match-function 'orderless-flex)
+  ;; yasnippet
+  (setq acm-completion-backend-merge-order
+        '("template-first-part-candidates"
+          "template-second-part-candidates"
+          "mode-first-part-candidates"
+          "mode-second-part-candidates"))
+  (setq acm-backend-yas-candidates-number 3
+        acm-backend-yas-match-by-trigger-keyword t
+        acm-backend-yas-show-trigger-keyword " [%s]")
+
+  :config
+
+  ;; (require 'acm-backend-lsp-workspace-symbol)
+  ;; (setq acm-enable-lsp-workspace-symbol t)
+
+  ;; enable acm cycle style
+  (defun ad/acm-select-prev ()
+    (interactive)
+    (acm-menu-update
+     (cond ((> acm-menu-index 0)
+            (setq-local acm-menu-index (1- acm-menu-index)))
+           ((> acm-menu-offset 0)
+            (setq-local acm-menu-offset (1- acm-menu-offset)))
+           (t (call-interactively #'acm-select-last)))))
+  (advice-add 'acm-select-prev :override #'ad/acm-select-prev)
+
+  (defun ad/acm-select-next ()
+    (interactive)
+    (acm-menu-update
+     (cond ((< acm-menu-index (1- (length acm-menu-candidates)))
+            (setq-local acm-menu-index (1+ acm-menu-index)))
+           ((< (+ acm-menu-offset acm-menu-index) (1- (length acm-candidates)))
+            (setq-local acm-menu-offset (1+ acm-menu-offset)))
+           (t (call-interactively #'acm-select-first)))))
+  (advice-add 'acm-select-next :override #'ad/acm-select-next)
+
+  ;; ;; TODO write a acm-switch-template
+  ;; (defun acm-switch-templates ()
+  ;;   "docstring"
+  ;;   (interactive))
+
+  ;; FIXME wrapper of `lsp-bridge-toggle-sdcv-helper'
+  (defun acm-sdcv-toggle ()
+    "docstring"
+    (interactive)
+    (let ((inhibit-message t))
+      (lsp-bridge-toggle-sdcv-helper)
+      (acm-update)
+      (acm-menu-update)))
+
+  (defun ad/acm-doc-toggle ()
+    (interactive)
+    (if (acm-frame-visible-p acm-doc-frame)
+        (progn
+          (acm-doc-hide)
+          (setq acm-enable-doc nil))
+      (setq acm-enable-doc t)
+      (acm-doc-try-show)))
+  (advice-add 'acm-doc-toggle :override #'ad/acm-doc-toggle))
 #+end_src
 
 Detect lang server
@@ -5125,83 +5219,6 @@ PROJECT_PATH and FILEPATH is needed."
                                "current_buf" (current-buffer)
                                "servers" servers))))))))
   )
-#+end_src
-
-*** acm
-
-#+begin_src emacs-lisp :lexical t :tangle yes
-;; FIXME can not detect frame switch between gui and tui, leads to crash.
-(use-package acm
-  :bind
-  (:map acm-mode-map
-   ("C-j" . nil)
-   ("C-k" . nil)
-   ;; ("C-;" . acm-switch-templates)
-   )
-  :init
-  (setq acm-enable-quick-access nil
-        acm-enable-tabnine nil
-        acm-enable-doc nil)
-  (setq acm-candidate-match-function 'orderless-flex)
-  ;; yasnippet
-  (setq acm-completion-backend-merge-order
-        '("template-first-part-candidates"
-          "template-second-part-candidates"
-          "mode-first-part-candidates"
-          "mode-second-part-candidates"))
-  (setq acm-backend-yas-candidates-number 3
-        acm-backend-yas-match-by-trigger-keyword t
-        acm-backend-yas-show-trigger-keyword " [%s]")
-
-  :config
-
-  ;; (require 'acm-backend-lsp-workspace-symbol)
-  ;; (setq acm-enable-lsp-workspace-symbol t)
-
-  ;; enable acm cycle style
-  (defun ad/acm-select-prev ()
-    (interactive)
-    (acm-menu-update
-     (cond ((> acm-menu-index 0)
-            (setq-local acm-menu-index (1- acm-menu-index)))
-           ((> acm-menu-offset 0)
-            (setq-local acm-menu-offset (1- acm-menu-offset)))
-           (t (call-interactively #'acm-select-last)))))
-  (advice-add 'acm-select-prev :override #'ad/acm-select-prev)
-
-  (defun ad/acm-select-next ()
-    (interactive)
-    (acm-menu-update
-     (cond ((< acm-menu-index (1- (length acm-menu-candidates)))
-            (setq-local acm-menu-index (1+ acm-menu-index)))
-           ((< (+ acm-menu-offset acm-menu-index) (1- (length acm-candidates)))
-            (setq-local acm-menu-offset (1+ acm-menu-offset)))
-           (t (call-interactively #'acm-select-first)))))
-  (advice-add 'acm-select-next :override #'ad/acm-select-next)
-
-  ;; ;; TODO write a acm-switch-template
-  ;; (defun acm-switch-templates ()
-  ;;   "docstring"
-  ;;   (interactive))
-
-  ;; FIXME wrapper of `lsp-bridge-toggle-sdcv-helper'
-  (defun acm-sdcv-toggle ()
-    "docstring"
-    (interactive)
-    (let ((inhibit-message t))
-      (lsp-bridge-toggle-sdcv-helper)
-      (acm-update)
-      (acm-menu-update)))
-
-  (defun ad/acm-doc-toggle ()
-    (interactive)
-    (if (acm-frame-visible-p acm-doc-frame)
-        (progn
-          (acm-doc-hide)
-          (setq acm-enable-doc nil))
-      (setq acm-enable-doc t)
-      (acm-doc-try-show)))
-  (advice-add 'acm-doc-toggle :override #'ad/acm-doc-toggle))
 #+end_src
 
 *** treesit                                                            :treesit:
