@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# open a new tui frame of emacs to edit files
+
+set -eu
+
+. "$(cd -- "$(dirname -- "$0")" >/dev/null 2>&1 && pwd)/_emacsclient.sh"
+
+emacsclient::ensure_running
+emacsclient::tui_open "$@"

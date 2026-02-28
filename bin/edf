@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 #
-set -ue
+set -eu
 
-source "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")/emacsclient.sh"
+. "$(cd -- "$(dirname -- "$0")" >/dev/null 2>&1 && pwd)/_emacsclient.sh"
 
 emacsclient::ensure_running
 

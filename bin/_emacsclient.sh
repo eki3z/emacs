@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # library for emacsclient functionality
 
 emacsclient::ensure_running() {
-  if command -v emacs &>/dev/null && command -v emacsclient &>/dev/null; then
+  if command -v emacs >/dev/null 2>&1 && command -v emacsclient >/dev/null 2>&1; then
     emacsclient -u -a "" -e "(server-running-p)" 2>/dev/null
   else
     echo "Error: emacs or emacsclient is not found."
@@ -13,7 +13,7 @@ emacsclient::ensure_running() {
 
 # SEE https://www.emacswiki.org/emacs/EmacsPipe
 emacsclient::pipe_detect() {
-  if [[ "$#" -eq 1 && "$1" == "-" ]]; then
+  if [ "$#" -eq 1 ] && [ "$1" = "-" ]; then
     mkdir -p /tmp/epipe
     EPIPE=$(mktemp "/tmp/epipe/$(date +%m%d-%H%M%S)-XXX")
 
@@ -32,16 +32,24 @@ emacsclient::gui_frame_length() {
 
 emacsclient::gui_open() {
   emacsclient::pipe_detect "$@"
-  if [[ "$#" -eq 0 ]]; then
+  if [ "$#" -eq 0 ]; then
     emacsclient -u -e "(select-frame-set-input-focus (selected-frame))"
   else
-    emacsclient -q -n "${EPIPE:-$@}"
+    if [ -n "${EPIPE:-}" ]; then
+      emacsclient -q -n "$EPIPE"
+    else
+      emacsclient -q -n "$@"
+    fi
   fi
 }
 
 emacsclient::tui_open() {
   emacsclient::pipe_detect "$@"
-  emacsclient -q -t "${EPIPE:-$@}"
+  if [ -n "${EPIPE:-}" ]; then
+    emacsclient -q -t "$EPIPE"
+  else
+    emacsclient -q -t "$@"
+  fi
 }
 
 emacsclient::tui_eval() {
