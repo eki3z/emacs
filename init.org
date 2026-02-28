@@ -2766,7 +2766,7 @@ No changes in mode-line."
 
 *** page-break-lines
 
-#+begin_src emacs-lisp :lexical t :tangle no
+#+begin_src emacs-lisp :lexical t :tangle yes
 (use-package page-break-lines
   :hook (after-init-hook . global-page-break-lines-mode)
   :init
