@@ -858,7 +858,8 @@ Same as `replace-string C-q C-m RET RET'."
   "Setup for frame related hooks."
   (run-hooks (if (display-graphic-p)
                  'after-make-graphic-frame-hook
-               'after-make-console-frame-hook)))
+               'after-make-console-frame-hook))
+  (menu-bar-mode -1))
 (add-hook 'server-after-make-frame-hook #'my/frame-setup)
 
 (defun my/frame-no-server-setup (frame)
