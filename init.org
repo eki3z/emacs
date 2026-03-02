@@ -1616,13 +1616,6 @@ install icons: ~brew install font-symbols-only-nerd-font~
   :init
   (setq nerd-icons-font-family "Symbols Nerd Font Mono"))
 
-(use-package nerd-icons-completion
-  :hook (after-init-hook . nerd-icons-completion-mode)
-  :init
-  (setq nerd-icons-completion-icon-size 0.8)
-  :config
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
-
 (use-package nerd-icons-ibuffer
   :hook (ibuffer-mode-hook . nerd-icons-ibuffer-mode)
   :init
@@ -1635,6 +1628,26 @@ install icons: ~brew install font-symbols-only-nerd-font~
                 " " (mode+ 16 16 :left :elide)
                 " " filename-and-process+)
           (mark " " name))))
+
+(use-package nerd-icons-dired
+  :hook (dired-mode-hook . nerd-icons-dired-mode)
+  :init
+  (setq nerd-icons-dired-icon-size 0.8))
+
+(use-package nerd-icons-completion
+  :hook (after-init-hook . nerd-icons-completion-mode)
+  :init
+  (setq nerd-icons-completion-icon-size 0.8)
+  :config
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
+(use-package nerd-icons-corfu
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+(with-eval-after-load 'magit
+  (setopt magit-format-file-function #'magit-format-file-nerd-icons))
 #+end_src
 
 *** duplexer
@@ -2012,7 +2025,7 @@ A prefix argument means to unmark them instead."
   (defun dired-mode-setup ()
     "Dired mode setup."
     (dired-omit-mode)
-    (dired-hide-details-mode)
+    ;; (dired-hide-details-mode)
     (diredfl-mode))
 
   :config
@@ -2282,11 +2295,6 @@ A prefix argument means to unmark them instead."
     (corfu-history-mode)
     (corfu-popupinfo-mode))
   :config
-
-  (use-package nerd-icons-corfu
-    :demand t
-    :config
-    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
   (use-package cape
     :demand t
@@ -4452,7 +4460,6 @@ If CN is non-nil, search in zh-CN documentation."
   (setq magit-save-repository-buffers 'dontask
         magit-bury-buffer-function #'magit-restore-window-configuration)
   (setq magit-show-long-lines-warning nil)
-  (setopt magit-format-file-function #'magit-format-file-nerd-icons)
 
   ;; Display fullframe buffer in some magit-*-modes
   (defvar magit-modes-display-fullframe-selected
