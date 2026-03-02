@@ -340,6 +340,9 @@
 [submodule "nerd-icons-corfu"]
 	path = lib/nerd-icons-corfu
 	url = https://github.com/LuigiPiucco/nerd-icons-corfu
+[submodule "nerd-icons-dired"]
+	path = lib/nerd-icons-dired
+	url = https://github.com/rainstormstudio/nerd-icons-dired
 [submodule "nerd-icons-ibuffer"]
 	path = lib/nerd-icons-ibuffer
 	url = https://github.com/seagle0128/nerd-icons-ibuffer
@@ -511,6 +514,9 @@
 	url = https://github.com/minad/vertico
 	load-path = .
 	load-path = extensions
+[submodule "vimrc-mode"]
+	path = lib/vimrc-mode
+	url = https://github.com/mcandre/vimrc-mode
 [submodule "visual-fill-column"]
 	path = lib/visual-fill-column
 	url = https://codeberg.org/joostkremers/visual-fill-column
