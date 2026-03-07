@@ -246,8 +246,8 @@ cancel disable property for some commands
               fill-column 85
               fringe-indicator-alist nil
               ;; fringes-outside-margins nil
-              ;; left-margin-width 1
-              ;; right-margin-width 1
+              left-margin-width 1
+              right-margin-width 1
               line-spacing 0.15
               default-directory "~")
 
@@ -1084,6 +1084,37 @@ elp is useful for seeing which functions in a package are "hot".
 (use-package exec-path-from-shell
   :demand t
   :hook (after-make-graphic-frame-hook . exec-path-from-shell-initialize))
+#+end_src
+
+*** mason
+#+begin_src emacs-lisp :lexical t
+(use-package mason
+  :demand t
+  :config
+  (setq my/mason-list
+        '(
+          bash-language-server shellcheck shfmt
+          ty ruff
+          lua-language-server luacheck stylua
+          yaml-language-server yamllint
+          clangd clang-format
+          c3-lsp
+          vim-language-server
+          typescript-language-server oxlint oxfmt
+          tailwind-language-server
+          vue-language-server
+          rescript-language-server
+          emmet-ls
+          astro-language-server
+          zls
+          taplo
+          jq yq))
+  (mason-setup)
+  (defun my/mason-install ()
+    (interactive)
+    (dolist (pkg my/mason-list)
+      (unless (mason-installed-p pkg)
+        (ignore-errors (mason-install pkg))))))
 #+end_src
 
 *** server
@@ -2777,7 +2808,7 @@ No changes in mode-line."
 
 #+begin_src emacs-lisp :lexical t :tangle yes
 (use-package page-break-lines
-  :hook (after-init-hook . global-page-break-lines-mode)
+  ;; :hook (after-init-hook . global-page-break-lines-mode)
   :init
   (setq page-break-lines-max-width fill-column))
 #+end_src
@@ -3548,7 +3579,7 @@ With a prefix argument prompt for the format."
   (setq binky-recent-sort-by 'frequency
         binky-preview-in-groups t
         binky-margin-string nil
-        binky-indicator-side 'right
+        binky-indicator-side 'left
         binky-command-prefix nil
         binky-hl-use-pulse t)
   (setq binky-back-mark ?')
@@ -4731,10 +4762,6 @@ Otherwise, behave like `magit-display-buffer-traditional'."
   (put 'flymake-note 'before-string ""))
 
 ;; REQUIRE
-;; pip install yamllint
-;; brew install shellcheck tidy-html5 jq
-;; luarocks install luacheck
-;; npm install -g less
 (use-package flymake-collection
   :hook (after-init-hook . flymake-collection-hook-setup)
   :init
