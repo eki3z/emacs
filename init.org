@@ -889,7 +889,6 @@ Selectively runs either `after-make-console-frame-hooks' or
 :PROPERTIES:
 :header-args: :tangle-mode: #o444 :comments link :tangle ./init.el
 :END:
-
 ** init start
 
 #+begin_src emacs-lisp :lexical t :comments no
@@ -4744,12 +4743,11 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 (use-package flymake
   :hook ((prog-mode-hook
           markdown-mode-hook
+          envrc-file-mode-hook
+          dotenv-mode-hook
           yaml-ts-mode-hook
-          web-vue-mode-hook) . flymake-setup)
+          web-vue-mode-hook) . flymake-mode)
   :init
-  (defun flymake-setup ()
-    (unless (eq major-mode 'envrc-file-mode)
-      (flymake-mode 1)))
   (setopt flymake-indicator-type nil
           flymake-margin-indicator-position nil
           flymake-fringe-indicator-position nil
@@ -4774,6 +4772,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
            (flymake-collection-eslint))
           ((json-mode json-ts-mode) flymake-collection-jq)
           ((yaml-mode yaml-ts-mode) flymake-collection-yamllint)
+          (dotenv-mode flymake-collection-dotenv-linter)
           ;; REQUIRE brew install tidy-html5
           ((web-mode html-ts-mode mhtml-mode html-mode) flymake-collection-html-tidy)
           (c-ts-mode flymake-collection-clang)
@@ -5948,7 +5947,7 @@ The DWIM behaviour of this command is as follows:
 
 #+begin_src emacs-lisp :lexical t :tangle yes
 (use-package envrc
-  :mode ("\\.env\\(rc\\)?\\'" . envrc-file-mode)
+  :mode ("\\.envrc\\'" . envrc-file-mode)
   :hook (after-init-hook . envrc-global-mode)
   :init
   (defun my/envrc-add-bin ()
