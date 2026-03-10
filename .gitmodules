@@ -3,6 +3,9 @@
 [submodule "adoc-mode"]
 	path = lib/adoc-mode
 	url = https://github.com/bbatsov/adoc-mode
+[submodule "aio"]
+	path = lib/aio
+	url = https://github.com/skeeto/emacs-aio
 [submodule "ansi"]
 	path = lib/ansi
 	url = https://github.com/rejeep/ansi.el
@@ -111,6 +114,9 @@
 [submodule "diredfl"]
 	path = lib/diredfl
 	url = https://github.com/purcell/diredfl
+[submodule "docker"]
+	path = lib/docker
+	url = https://github.com/Silex/docker.el
 [submodule "dotenv-mode"]
 	path = lib/dotenv-mode
 	url = https://github.com/preetpalS/emacs-dotenv-mode
@@ -486,6 +492,9 @@
 [submodule "ssh-config-mode"]
 	path = lib/ssh-config-mode
 	url = https://github.com/peterhoeg/ssh-config-mode-el
+[submodule "tablist"]
+	path = lib/tablist
+	url = https://github.com/emacsorphanage/tablist
 [submodule "tera-mode"]
 	path = lib/tera-mode
 	url = https://github.com/svavs/tera-mode.git
