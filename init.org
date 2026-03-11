@@ -993,8 +993,10 @@ elp is useful for seeing which functions in a package are "hot".
 (add-to-list 'load-path (expand-file-name "lib/borg" user-emacs-directory))
 (require 'borg)
 (setq borg-rewrite-urls-alist
-      '(("git@github.com:" . "https://github.com/")
-        ("git@gitlab.com:" . "https://gitlab.com/")))
+      '(("git@github.com:"   .  "https://github.com/")
+        ("git@gitlab.com:"   .  "https://gitlab.com/")
+        ("git@codeberg.org:" .  "https://codeberg.org/")
+        ("git@git.sr.ht:"    .  "https://git.sr.ht/")))
 (setq borg-compile-function #'borg-byte+native-compile-async)
 (borg-initialize)
 #+end_src
@@ -4720,6 +4722,15 @@ Otherwise, behave like `magit-display-buffer-traditional'."
   (push elfeed-db-directory recentf-exclude))
 #+end_src
 
+*** clutch
+#+begin_src emacs-lisp :lexical t
+(use-package clutch
+  :config
+  ;; (setq clutch-connection-alist
+  ;;       '(("monitor" . (:backend "sqlite" ))))
+  )
+#+end_src
+
 *** project
 
 #+begin_src emacs-lisp :lexical t
@@ -4743,7 +4754,6 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 (use-package flymake
   :hook ((prog-mode-hook
           markdown-mode-hook
-          envrc-file-mode-hook
           dotenv-mode-hook
           yaml-ts-mode-hook
           web-vue-mode-hook) . flymake-mode)
