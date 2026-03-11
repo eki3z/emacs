@@ -46,6 +46,9 @@
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql.git
+[submodule "clutch"]
+	path = lib/clutch
+	url = https://github.com/LuciusChen/clutch.git
 [submodule "coercion"]
 	path = lib/coercion
 	url = https://github.com/eki3z/coercion.el
