@@ -6,3 +6,4 @@ tree-sitter/
 init.el
 init-mini.el
 early-init.el
+private.el
