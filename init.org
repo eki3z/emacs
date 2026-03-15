@@ -304,16 +304,11 @@ create dirs if not exists
   (expand-file-name "init.org" user-emacs-directory)
   "User dir for minimal debugging config.")
 
-(defconst my/dir-org
-  (expand-file-name "org/" "~/Documents")
-  "User dir for minimal debugging config.")
-
 ;; ensure dir exists
 (dolist (dir `(,my/dir-cache
                ,my/dir-etc
                ,my/dir-debug
-               ,my/dir-lisp
-               ,my/dir-org))
+               ,my/dir-lisp))
   (make-directory dir t))
 #+end_src
 
@@ -336,7 +331,7 @@ load custom files
 
 load private informations if exists
 #+begin_src emacs-lisp :lexical t
-(setq private-file (expand-file-name "etc/private.el" my/dir-cache))
+(setq private-file (expand-file-name "private.el" user-emacs-directory))
 (when (file-exists-p private-file)
   (load private-file nil :no-message))
 #+end_src
@@ -5635,7 +5630,6 @@ to define a org presentation like in system craft
    )
   :init
 
-  (setq org-directory my/dir-org)
   (setq org-insert-mode-line-in-empty-file t)
   (setq org-imenu-depth 4)
   (setq org-todo-keywords '((sequence "TODO(t)" "CACEL(c)" "DONE(d)" "|"))
@@ -5646,7 +5640,14 @@ to define a org presentation like in system craft
                              (?B . warning)
                              (?C . success)))
   ;; agenda
-  (setq org-agenda-files (list my/dir-org))
+  (defun my/org-agenda-year-view (&optional year)
+    "Advice to remove y-or-n."
+    (interactive "P")
+    (when year
+      (setq year (org-small-year-to-year year)))
+    (org-agenda-change-time-span 'year year))
+  (advice-add 'org-agenda-year-view :override #'my/org-agenda-year-view)
+
   ;; src
   (setq org-edit-src-content-indentation 0
         org-edit-src-auto-save-idle-delay 5
