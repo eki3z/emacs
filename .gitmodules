@@ -12,6 +12,9 @@
 [submodule "apheleia"]
 	path = lib/apheleia
 	url = https://github.com/radian-software/apheleia
+[submodule "appine"]
+	path = lib/appine
+	url = https://github.com/chaoswork/appine.git
 [submodule "async"]
 	path = lib/async
 	url = https://github.com/jwiegley/emacs-async
@@ -411,9 +414,6 @@
 [submodule "pcre2el"]
 	path = lib/pcre2el
 	url = https://github.com/joddie/pcre2el
-[submodule "pdf-tools"]
-	path = lib/pdf-tools
-	url = https://github.com/vedang/pdf-tools
 [submodule "pinyinlib"]
 	path = lib/pinyinlib
 	url = https://github.com/cute-jumper/pinyinlib.el
