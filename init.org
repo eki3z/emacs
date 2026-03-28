@@ -4370,6 +4370,8 @@ If CN is non-nil, search in zh-CN documentation."
               '((python-mode . (ruff ruff-isort))
                 (python-ts-mode . (ruff ruff-isort))
                 (bash-ts-mode . shfmt)
+                ((json-ts-mode js-json-mode) . yq-json)
+
                 ;; (ruby-ts-mode . rubocop)
                 ;; ((html-mode html-ts-mode mhtml-mode mhtml-ts-mode nxml-mode) . biome)
                 ;; ((css-mode css-ts-mode) . biome)
@@ -5615,7 +5617,7 @@ to define a org presentation like in system craft
   :commands grip-start-preview
   :config
   ;; BUG lose md code block background
-  (setq grip-preview-use-webkit t))
+  (setq grip-preview-in-webkit t))
 #+end_src
 
 *** org                                                                    :org:
