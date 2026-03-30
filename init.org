@@ -4968,7 +4968,10 @@ Otherwise, behave like `magit-display-buffer-traditional'."
               astro-ts-mode-hook
               js-json-mode-hook
               moonbit-mode-hook
-              web-vue-mode)))
+              web-vue-mode))
+
+  ;; disable markdown lsp
+  (setq lsp-bridge-default-mode-hooks (delq 'markdown-mode-hook lsp-bridge-default-mode-hooks)))
 
 ;; FIXME can not detect frame switch between gui and tui, leads to crash.
 (use-package acm
