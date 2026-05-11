@@ -3,18 +3,12 @@
 [submodule "adoc-mode"]
 	path = lib/adoc-mode
 	url = https://github.com/bbatsov/adoc-mode
-[submodule "aio"]
-	path = lib/aio
-	url = https://github.com/skeeto/emacs-aio
 [submodule "ansi"]
 	path = lib/ansi
 	url = https://github.com/rejeep/ansi.el
 [submodule "apheleia"]
 	path = lib/apheleia
 	url = https://github.com/radian-software/apheleia
-[submodule "appine"]
-	path = lib/appine
-	url = https://github.com/chaoswork/appine.git
 [submodule "async"]
 	path = lib/async
 	url = https://github.com/jwiegley/emacs-async
@@ -49,9 +43,6 @@
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql.git
-[submodule "clutch"]
-	path = lib/clutch
-	url = https://github.com/LuciusChen/clutch.git
 [submodule "coercion"]
 	path = lib/coercion
 	url = https://github.com/eki3z/coercion.el
@@ -79,23 +70,14 @@
 [submodule "consult-yasnippet"]
 	path = lib/consult-yasnippet
 	url = https://github.com/mohkale/consult-yasnippet
-[submodule "copy-as-format"]
-	path = lib/copy-as-format
-	url = https://github.com/sshaw/copy-as-format
 [submodule "corfu"]
 	path = lib/corfu
 	load-path = .
 	load-path = extensions
 	url = https://github.com/minad/corfu
-[submodule "corfu-terminal"]
-	path = lib/corfu-terminal
-	url = https://codeberg.org/akib/emacs-corfu-terminal
 [submodule "csv-mode"]
 	path = lib/csv-mode
 	url = https://github.com/emacsmirror/csv-mode.git
-[submodule "ct"]
-	path = lib/ct
-	url = https://github.com/neeasade/ct.el
 [submodule "dash"]
 	path = lib/dash
 	url = https://github.com/magnars/dash.el
@@ -111,18 +93,12 @@
 [submodule "diff-hl"]
 	path = lib/diff-hl
 	url = https://github.com/dgutov/diff-hl
-[submodule "dir-config"]
-	path = lib/dir-config
-	url = https://github.com/jamescherti/dir-config.el
 [submodule "dired-preview"]
 	path = lib/dired-preview
 	url = https://github.com/protesilaos/dired-preview
 [submodule "diredfl"]
 	path = lib/diredfl
 	url = https://github.com/purcell/diredfl
-[submodule "docker"]
-	path = lib/docker
-	url = https://github.com/Silex/docker.el
 [submodule "dotenv-mode"]
 	path = lib/dotenv-mode
 	url = https://github.com/preetpalS/emacs-dotenv-mode
@@ -135,18 +111,9 @@
 [submodule "edit-indirect"]
 	path = lib/edit-indirect
 	url = https://github.com/Fanael/edit-indirect
-[submodule "elfeed"]
-	path = lib/elfeed
-	url = https://github.com/skeeto/elfeed
-[submodule "elfeed-webkit"]
-	path = lib/elfeed-webkit
-	url = https://github.com/fritzgrabo/elfeed-webkit
 [submodule "elisp-demos"]
 	path = lib/elisp-demos
 	url = https://github.com/xuchunyang/elisp-demos
-[submodule "elisp-refs"]
-	path = lib/elisp-refs
-	url = https://github.com/Wilfred/elisp-refs
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = https://github.com/skeeto/emacsql.git
@@ -205,9 +172,6 @@
 [submodule "git-cliff"]
 	path = lib/git-cliff
 	url = https://github.com/eki3z/git-cliff.el
-[submodule "git-link"]
-	path = lib/git-link
-	url = https://github.com/sshaw/git-link
 [submodule "git-modes"]
 	path = lib/git-modes
 	url = https://github.com/magit/git-modes
@@ -220,12 +184,6 @@
 [submodule "gitignore-templates\\"]
 	path = lib/gitignore-templates\\
 	url = https://github.com/liuyinz/emacs.d.git
-[submodule "gptel"]
-	path = lib/gptel
-	url = https://github.com/karthink/gptel
-[submodule "gptel-agent"]
-	path = lib/gptel-agent
-	url = https://github.com/karthink/gptel-agent
 [submodule "graphql-ts-mode"]
 	path = lib/graphql-ts-mode
 	url = https://git.sr.ht/~joram/graphql-ts-mode
@@ -250,9 +208,6 @@
 [submodule "hl-todo"]
 	path = lib/hl-todo
 	url = https://github.com/tarsius/hl-todo
-[submodule "hsluv"]
-	path = lib/hsluv
-	url = https://github.com/hsluv/hsluv-emacs
 [submodule "ht"]
 	path = lib/ht
 	url = https://github.com/Wilfred/ht.el
@@ -292,9 +247,6 @@
 [submodule "keyfreq"]
 	path = lib/keyfreq
 	url = https://github.com/dacap/keyfreq
-[submodule "license-templates"]
-	path = lib/license-templates
-	url = https://github.com/jcs-elpa/license-templates
 [submodule "lin"]
 	path = lib/lin
 	url = https://github.com/protesilaos/lin
@@ -304,9 +256,6 @@
 [submodule "list-unicode-display"]
 	path = lib/list-unicode-display
 	url = https://github.com/purcell/list-unicode-display
-[submodule "list-utils"]
-	path = lib/list-utils
-	url = https://github.com/rolandwalker/list-utils
 [submodule "llama"]
 	path = lib/llama
 	url = https://github.com/tarsius/llama.git
@@ -319,9 +268,6 @@
 	build-step = borg-update-autoloads
 	load-path = .
 	load-path = acm
-[submodule "macrostep"]
-	path = lib/macrostep
-	url = https://github.com/emacsorphanage/macrostep
 [submodule "magit"]
 	path = lib/magit
 	url = https://github.com/magit/magit
@@ -337,15 +283,9 @@
 [submodule "mason"]
 	path = lib/mason
 	url = https://github.com/deirn/mason.el
-[submodule "md"]
-	path = lib/md
-	url = https://github.com/eki3z/md.el.git
 [submodule "meow"]
 	path = lib/meow
 	url = https://github.com/meow-edit/meow
-[submodule "meow-tree-sitter"]
-	path = lib/meow-tree-sitter
-	url = https://github.com/skissue/meow-tree-sitter
 [submodule "mermaid-mode"]
 	path = lib/mermaid-mode
 	url = https://github.com/abrochard/mermaid-mode
@@ -411,12 +351,6 @@
 [submodule "page-break-lines"]
 	path = lib/page-break-lines
 	url = https://github.com/purcell/page-break-lines
-[submodule "pandoc-mode"]
-	path = lib/pandoc-mode
-	url = https://github.com/joostkremers/pandoc-mode
-[submodule "pcre2el"]
-	path = lib/pcre2el
-	url = https://github.com/joddie/pcre2el
 [submodule "pinyinlib"]
 	path = lib/pinyinlib
 	url = https://github.com/cute-jumper/pinyinlib.el
@@ -429,21 +363,12 @@
 [submodule "plz-see"]
 	path = lib/plz-see
 	url = https://github.com/astoff/plz-see.el
-[submodule "popon"]
-	path = lib/popon
-	url = https://codeberg.org/akib/emacs-popon
 [submodule "popper"]
 	path = lib/popper
 	url = https://github.com/karthink/popper
-[submodule "popup"]
-	path = lib/popup
-	url = https://github.com/auto-complete/popup-el
 [submodule "posframe"]
 	path = lib/posframe
 	url = https://github.com/tumashu/posframe
-[submodule "proxy-mode"]
-	path = lib/proxy-mode
-	url = https://repo.or.cz/proxy-mode.git
 [submodule "psearch"]
 	path = lib/psearch
 	url = https://github.com/twlz0ne/psearch.el.git
@@ -474,24 +399,12 @@
 [submodule "rg"]
 	path = lib/rg
 	url = https://github.com/dajva/rg.el
-[submodule "rsync-mode"]
-	path = lib/rsync-mode
-	url = https://github.com/r-zip/rsync-mode
 [submodule "s"]
 	path = lib/s
 	url = https://github.com/magnars/s.el
-[submodule "selected"]
-	path = lib/selected
-	url = https://github.com/Kungsgeten/selected.el
-[submodule "separedit"]
-	path = lib/separedit
-	url = https://github.com/twlz0ne/separedit.el
 [submodule "shackle"]
 	path = lib/shackle
 	url = https://depp.brause.cc/shackle.git
-[submodule "shrink-path"]
-	path = lib/shrink-path
-	url = https://gitlab.com/bennya/shrink-path.el
 [submodule "simpleclip"]
 	path = lib/simpleclip
 	url = https://github.com/rolandwalker/simpleclip
@@ -504,15 +417,9 @@
 [submodule "ssh-config-mode"]
 	path = lib/ssh-config-mode
 	url = https://github.com/peterhoeg/ssh-config-mode-el
-[submodule "tablist"]
-	path = lib/tablist
-	url = https://github.com/emacsorphanage/tablist
 [submodule "tera-mode"]
 	path = lib/tera-mode
 	url = https://github.com/svavs/tera-mode.git
-[submodule "terminal-focus-reporting"]
-	path = lib/terminal-focus-reporting
-	url = https://github.com/emacsattic/terminal-focus-reporting
 [submodule "transient"]
 	path = lib/transient
 	url = https://github.com/magit/transient
@@ -529,9 +436,6 @@
 [submodule "treepy"]
 	path = lib/treepy
 	url = https://github.com/volrath/treepy.el
-[submodule "treesit-fold"]
-	path = lib/treesit-fold
-	url = https://github.com/emacs-tree-sitter/treesit-fold
 [submodule "undo-fu-session"]
 	path = lib/undo-fu-session
 	url = https://codeberg.org/ideasman42/emacs-undo-fu-session
@@ -541,9 +445,6 @@
 [submodule "valign"]
 	path = lib/valign
 	url = https://github.com/casouri/valign
-[submodule "vc-msg"]
-	path = lib/vc-msg
-	url = https://github.com/redguardtoo/vc-msg
 [submodule "vertico"]
 	path = lib/vertico
 	url = https://github.com/minad/vertico
@@ -567,9 +468,6 @@
 [submodule "web-mode"]
 	path = lib/web-mode
 	url = https://github.com/fxbois/web-mode
-[submodule "web-server"]
-	path = lib/web-server
-	url = https://github.com/eschulte/emacs-web-server
 [submodule "websocket"]
 	path = lib/websocket
 	url = https://github.com/ahyatt/emacs-websocket
