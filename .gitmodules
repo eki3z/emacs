@@ -114,6 +114,9 @@
 [submodule "elisp-demos"]
 	path = lib/elisp-demos
 	url = https://github.com/xuchunyang/elisp-demos
+[submodule "elisp-refs"]
+	path = lib/elisp-refs
+	url = https://github.com/Wilfred/elisp-refs
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = https://github.com/skeeto/emacsql.git
