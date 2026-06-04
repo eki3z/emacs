@@ -2140,57 +2140,6 @@ A prefix argument means to unmark them instead."
   (setopt dired-preview-kill-buffers-method (cons 'buffer-number 30)))
 #+end_src
 
-*** dirvish
-
-#+begin_src emacs-lisp :lexical t :tangle no
-(use-package dirvish
-  :hook (after-init-hook . dirvish-override-dired-mode)
-  :bind
-  (("C-x d" . dirvish)
-   :map dired-mode-map
-   ("["   . dirvish-layout-switch)
-   ("]"   . dirvish-layout-toggle)
-   ("TAB" . dirvish-toggle-subtree-anywhere))
-  :init
-  (setq dirvish-attributes
-        '(subtree-state nerd-icons collapse file-size)
-        dirvish-use-mode-line nil
-        dirvish-use-header-line nil
-        dirvish-preview-dispatchers nil)
-
-  (defun dirvish-toggle-subtree-anywhere ()
-    "Toggle current directory subtree or parent directory."
-    (interactive)
-    (let ((dir-p (file-directory-p (dired-get-filename))))
-      (if (and (not dir-p)
-               (equal 0 (dirvish-subtree--depth)))
-          (dired-up-directory)
-        (and (not dir-p) (dirvish-subtree-up))
-        (dirvish-subtree-toggle))))
-
-  ;; TODO fix dired-goto-file if subtree is on.
-
-  :config
-
-  ;; setup layout
-  (setq dirvish-default-layout '(0 0 0.75))
-  (setq dirvish-layout-recipes
-        `((1 0.11 0.55)
-          ;; HACK hide preview window as small as possible to imitate full-screen dired
-          (0 0 0.02)
-          ,dirvish-default-layout))
-
-  (use-package dirvish-subtree
-    :init
-    (setq dirvish-subtree-listing-switches "-A"
-          dirvish-subtree-always-show-state t
-          dirvish-subtree-prefix " "))
-
-  (use-package dirvish-icons
-    :init
-    (setq dirvish-nerd-icons-height 0.8)))
-#+end_src
-
 *** vertico                                                         :minibuffer:
 
 #+begin_src emacs-lisp :lexical t
@@ -2949,21 +2898,6 @@ https://protesilaos.com/emacs/modus-themes
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)))
 #+end_src
 
-*** indent-bars
-
-#+begin_src emacs-lisp :lexical t
-;; SEE https://github.com/jdtsmith/indent-bars.git
-;; (use-package indent-bars
-;;   :hook (prog-mode-hook . indent-bars-mode)
-;;   :init
-;;   (setq
-;;    indent-bars-pattern "."
-;;    indent-bars-width-frac 0.5
-;;    indent-bars-pad-frac 0.25
-;;    indent-bars-color-by-depth nil
-;;    indent-bars-highlight-current-depth '(:face default :blend 0.4)))
-#+end_src
-
 *** window
 
 #+begin_src emacs-lisp :lexical t
@@ -3534,38 +3468,6 @@ https://protesilaos.com/emacs/modus-themes
   )
 #+end_src
 
-*** copy-as-format
-
-#+begin_src emacs-lisp :lexical t
-(use-package copy-as-format
-  :demand t
-  :bind
-  ("s-C" . simpleclip-copy-as-format)
-  :init
-  (defun simpleclip-copy-as-format ()
-    "Copy the current line or active region and add it to the system clipboard as
-GitHub/Slack/JIRA/HipChat/... formatted code.  Format defaults to
-`copy-as-format-default'.  The buffer will not be modified.
-With a prefix argument prompt for the format."
-    (interactive)
-    (let* ((text (copy-as-format--extract-text))
-           (format (if current-prefix-arg
-                       (completing-read "Format: "
-                                        (mapcar 'car copy-as-format-format-alist)
-                                        nil t "" nil copy-as-format-default)
-                     copy-as-format-default))
-           (func (cadr (assoc format copy-as-format-format-alist))))
-      (when (eq (length text) 0)
-        (error "No text selected"))
-      (when (not (fboundp func))
-        (error "Missing or invalid format function for `%s'" format))
-      (simpleclip-set-contents (funcall func text (use-region-p)))
-      (setq deactivate-mark t))))
-
-;; TODO write alignment command based-on this library
-;; (use-package delim-col)
-#+end_src
-
 *** binky                                                                 :jump:
 
 #+begin_src emacs-lisp :lexical t
@@ -3644,7 +3546,6 @@ With a prefix argument prompt for the format."
       (if (webjump-null-or-blank-string-p input) nil input)))
   (advice-add 'webjump-read-string :override #'ad/webjump-read-string-enable-visual))
 #+end_src
-
 *** paren
 
 #+begin_src emacs-lisp :lexical t
@@ -3827,38 +3728,10 @@ With a prefix argument prompt for the format."
 (use-package pinyinlib :demand t)
 #+end_src
 
-*** pandoc-mode
-
-#+begin_src emacs-lisp :lexical t
-(use-package pandoc-mode)
-#+end_src
-
 *** ddp                                                                   :data:
 
 #+begin_src emacs-lisp :lexical t
 (use-package ddp)
-#+end_src
-
-*** proxy-mode                                                         :network:
-
-#+begin_src emacs-lisp :lexical t
-(use-package proxy-mode
-  :init
-  (when-let* ((http (getenv "HTTP")))
-    (setq proxy-mode-env-http-proxy (concat "http://" http))
-    (setq proxy-mode-emacs-http-proxy
-          `(("http"     . ,http)
-            ("https"    . ,http)
-            ("ftp"      . ,http)
-            ("no_proxy" . "127.0.0.1"))))
-
-  (when-let* ((sock (getenv "SOCKS")))
-    (setq proxy-mode-emacs-socks-proxy
-          `("Default server"
-            ,(substring sock 0 -5)
-            ,(substring sock -4 nil)
-            5)))
-  )
 #+end_src
 
 *** keycast
@@ -3916,47 +3789,6 @@ With a prefix argument prompt for the format."
   )
 #+end_src
 
-*** dwim-shell-command                                                   :shell:
-
-#+begin_src emacs-lisp :lexical t :tangle no
-;; TODO rewrite a shell-enhanced plugin
-(use-package dwim-shell-command
-  :commands dwim-shell-command-on-marked-files
-  :init
-  (defun my/open-with=vscode ()
-    (interactive)
-    (dwim-shell-command-on-marked-files
-     "Open current file in vscode."
-     (if (eq system-type 'darwin)
-         (if (derived-mode-p 'prog-mode)
-             (format "code --goto '<<f>>':%d:%d"
-                     (current-line)
-                     (current-column))
-           "open '<<f>>'")
-       "setsid -w xdg-open '<<f>>'")
-     :shell-args '("-x" "-c")
-     :silent-success t
-     :utils (if (eq system-type 'darwin)
-                "open"
-              "xdg-open"))))
-;;(use-package aider)
-#+end_src
-
-*** gptel
-
-#+begin_src emacs-lisp :lexical t
-;; (require 'gptel-curl)
-;; (require 'gptel-gemini)
-;; (use-package gptel
-;;   :demand t
-;;   :init
-;;   ;; OPTIONAL configuration
-;;   (setq gptel-model 'gemini-1.5-pro-latest
-;;         gptel-backend (gptel-make-gemini "Gemini"
-;;                         :key (getenv "GEMINI_API_KEY")
-;;                         :stream t)))
-#+end_src
-
 *** epg-config
 
 #+begin_src emacs-lisp :lexical t
@@ -3995,12 +3827,6 @@ With a prefix argument prompt for the format."
                 ((package-lint-looks-like-a-package-p)))
       (require 'package-lint-flymake)
       (package-lint-flymake-setup))))
-#+end_src
-
-*** license-templates                                                      :dev:
-
-#+begin_src emacs-lisp :lexical t
-(use-package license-templates)
 #+end_src
 
 *** bench-multi                                                            :dev:
@@ -4103,12 +3929,6 @@ Before each form is run, `garbage-collect' is called."
                                  (if (> (cl-fourth (nth i results)) 0)
                                      (format "%.6f" (cl-fourth (nth i results)))
                                    0)))))
-#+end_src
-
-*** ct                                                                   :color:
-
-#+begin_src emacs-lisp :lexical t
-(use-package ct)
 #+end_src
 
 *** term                                                                 :shell:
@@ -4297,22 +4117,6 @@ Or create a new one in other window."
    (t (run-general! quickrun-region quickrun))))
 #+end_src
 
-*** devdocs                                                                :dev:
-
-#+begin_src emacs-lisp :lexical t
-(defun-mixed!
- devdocs-at-point
- word
- "Search devdocs.io"
-
- ;; SEE https://devdocs.io/help
- (browse-url (format "https://devdocs.io/#q=%s" (url-hexify-string query)))
-
- ;; SEE https://github.com/egoist/devdocs-desktop#using-homebrew
- ;; (shell-command (format "open devdocs://search/%s" (url-hexify-string query)))
- )
-#+end_src
-
 *** cheatsheet                                                             :dev:
 
 #+begin_src emacs-lisp :lexical t
@@ -4330,14 +4134,6 @@ If CN is non-nil, search in zh-CN documentation."
                                 "gh api --jq '.[].name' /repos/Fechin/reference/contents/source/_posts"))))
                     nil t)))
     (browse-url (concat "https://cheatsheets.zip/" (if cn (concat "zh-CN/docs/" ref ".html") ref)))))
-#+end_src
-
-*** editorconfig                                                        :format:
-
-#+begin_src emacs-lisp :lexical t
-
-;; (use-package editorconfig
-;;   :hook (after-init-hook . editorconfig-mode))
 #+end_src
 
 *** apheleia                                                            :format:
@@ -4389,15 +4185,6 @@ If CN is non-nil, search in zh-CN documentation."
   (setq vc-follow-symlinks t))
 #+end_src
 
-*** vc-msg                                                                 :git:
-
-#+begin_src emacs-lisp :lexical t
-(use-package vc-msg
-  :init
-  (setq vc-msg-show-at-line-beginning-p nil
-        vc-msg-newbie-friendly-msg ""))
-#+end_src
-
 *** git-cliff                                                              :git:
 
 #+begin_src emacs-lisp :lexical t
@@ -4424,23 +4211,6 @@ If CN is non-nil, search in zh-CN documentation."
       ["Template"
        ("n" "new file" gitignore-templates-new-file)
        ("i" "insert pattern" gitignore-templates-insert)])))
-#+end_src
-
-*** git-link                                                               :git:
-
-#+begin_src emacs-lisp :lexical t
-(use-package git-link
-  :init
-  (setq git-link-use-commit t)
-  (defun ad/git-link-to-system-clip (&rest _)
-    "Copy to git link to system clip rather than kill-ring."
-    (when (and kill-ring
-               (fboundp #'simpleclip-set-contents))
-      (simpleclip-set-contents
-       (substring-no-properties (pop kill-ring)))))
-  (advice-add 'git-link--new :after #'ad/git-link-to-system-clip)
-  ;; Integrate with `magit-tool'
-  )
 #+end_src
 
 *** browse-at-remote                                                       :git:
@@ -4594,137 +4364,6 @@ Otherwise, behave like `magit-display-buffer-traditional'."
            (margin-width     . 60)
            (margin-face      . magit-blame-margin)
            (margin-body-face . magit-blame-dimmed))))
-  )
-#+end_src
-
-*** elfeed
-
-#+begin_src emacs-lisp :lexical t
-(use-package elfeed
-  :init
-  (setq url-queue-timeout 30)
-  (setq elfeed-initial-tags '(unread))
-  (setq elfeed-search-filter "@6-months-ago")
-  ;; (setq elfeed-show-entry-switch #'switch-to-buffer
-  ;;       elfeed-show-entry-delete #'elfeed-kill-buffer)
-  (setq elfeed-curl-extra-arguments '("--proxy" "socks5://127.0.0.1:7890"
-                                      "--retry" "3"
-                                      "--insecure"))
-  (setq elfeed-feeds
-        '(("https://sachachua.com/blog/feed" sacha emacs)
-          ("https://planet.emacslife.com/atom.xml" emacs)
-          ("http://www.masteringemacs.org/feed/" emacs)
-          ("http://pragmaticemacs.com/feed/" emacs)
-          ("https://oremacs.com/atom.xml" emacs)
-          ("http://xahlee.info/emacs/emacs/blog.xml" emacs xah)
-          ("https://pinecast.com/feed/emacscast" emacs)
-          ("https://emacstil.com/feed.xml" emacs)
-          ("https://emacstalk.codeberg.page/podcast/index.xml" emacs)
-          ("https://manateelazycat.github.io/feed.xml" lazycat emacs)
-          ("https://news.ycombinator.com/rss" hacker news)))
-
-  ;; SEE https://emacs-china.org/t/elfeed-nerd-icons/26125
-  (setq  elfeed-search-print-entry-function #'elfeed-search-print-entry--my)
-  (defun elfeed-search-print-entry--my (entry)
-    "Print ENTRY to the buffer."
-    (let* ((date (elfeed-search-format-date (elfeed-entry-date entry)))
-           (date-width (car (cdr elfeed-search-date-format)))
-           (title (concat (or (elfeed-meta entry :title)
-                              (elfeed-entry-title entry) "")
-                          ;; NOTE: insert " " for overlay to swallow
-                          " "))
-           (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
-           (feed (elfeed-entry-feed entry))
-           (feed-title (when feed (or (elfeed-meta feed :title)
-                                      (elfeed-feed-title feed))))
-           (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
-           (tags-str (mapconcat (lambda (s)
-                                  (propertize s 'face 'elfeed-search-tag-face))
-                                tags ","))
-           (title-width (- (frame-width)
-                           ;; (window-width (get-buffer-window (elfeed-search-buffer) t))
-                           date-width elfeed-search-trailing-width))
-           (title-column (elfeed-format-column
-                          title (elfeed-clamp
-                                 elfeed-search-title-min-width
-                                 title-width
-                                 elfeed-search-title-max-width) :left))
-           ;; Title/Feed ALIGNMENT
-           (align-to-feed-pixel (+ date-width
-                                   (max elfeed-search-title-min-width
-                                        (min title-width
-                                             elfeed-search-title-max-width)))))
-      (insert (propertize date 'face 'elfeed-search-date-face) " ")
-      (insert (propertize title-column 'face title-faces 'kbd-help title))
-      (put-text-property (1- (point)) (point) 'display
-                         `(space :align-to ,align-to-feed-pixel))
-      (when feed-title
-        (insert " " (propertize feed-title 'face 'elfeed-search-feed-face) " "))
-      (when tags (insert "(" tags-str ")"))))
-
-  :config
-
-  (use-package elfeed-webkit
-    :demand t
-    :init
-    (advice-add 'elfeed-show-mode :after #'elfeed-webkit-toggle)
-    :bind
-    (:map elfeed-show-mode-map
-     ("%" . elfeed-webkit-toggle)))
-
-  (defun eli/elfeed-overview ()
-    "Get an overview of all feeds."
-    (interactive)
-    (with-current-buffer (elfeed-search-buffer)
-      (elfeed-save-excursion
-       (let* ((inhibit-read-only t)
-              (standard-output (current-buffer)))
-         (erase-buffer)
-         (eli/elfeed-overview--update-list)
-         (dolist (entry elfeed-search-entries)
-           (funcall elfeed-search-print-entry-function entry)
-           (insert "\n"))
-         (setf elfeed-search-last-update (float-time))))
-      (when (zerop (buffer-size))
-        ;; If nothing changed, force a header line update
-        (force-mode-line-update))
-      (run-hooks 'elfeed-search-update-hook)))
-
-  (defun eli/elfeed-overview--update-list ()
-    "Update `elfeed-search-filter' list."
-    (let* ((head (list nil))
-           (tail head)
-           (count 0))
-      (dolist (feed elfeed-feeds)
-        (let* ((lexical-binding t)
-               (filter (elfeed-search-parse-filter
-                        (concat "=" (or (car-safe feed)
-                                        feed))))
-               (func (byte-compile (elfeed-search-compile-filter filter))))
-          (with-elfeed-db-visit (entry feed)
-                                (when (funcall func entry feed count)
-                                  (setf (cdr tail) (list entry)
-                                        tail (cdr tail)
-                                        count (1+ count))
-                                  (elfeed-db-return)))))
-      (let ((entries (cdr head))
-            (elfeed-search-sort-function
-             (lambda (a b)
-               (let ((a-date (elfeed-entry-date a))
-                     (b-date (elfeed-entry-date b)))
-                 (> a-date b-date)))))
-        (setf entries (sort entries elfeed-search-sort-function))
-        (setf elfeed-search-entries
-              entries))))
-  (push elfeed-db-directory recentf-exclude))
-#+end_src
-
-*** clutch
-#+begin_src emacs-lisp :lexical t
-(use-package clutch
-  :config
-  ;; (setq clutch-connection-alist
-  ;;       '(("monitor" . (:backend "sqlite" ))))
   )
 #+end_src
 
@@ -5297,12 +4936,6 @@ PROJECT_PATH and FILEPATH is needed."
         (python-mode . python-ts-mode)
         ;; (markdown-mode . markdown-ts-mode)
         (sh-mode . bash-ts-mode)))
-#+end_src
-
-*** treesit-fold                                                       :treesit:
-
-#+begin_src emacs-lisp :lexical t
-(use-package treesit-fold)
 #+end_src
 
 *** built-in langs
@@ -5983,29 +5616,5 @@ The DWIM behaviour of this command is as follows:
 ;; :init
 ;; ;; (setq mise-debug t)
 ;; )
-#+end_src
-
-*** combobulate                                                        :treesit:
-
-#+begin_src emacs-lisp :lexical t :tangle no
-(use-package combobulate
-  :hook
-  ((tsx-ts-mode-hook js-ts-mode-hook typescript-ts-mode-hook) . combobulate-mode)
-  :init
-  (setq combobulate-proffer-allow-numeric-selection t
-        combobulate-flash-node nil
-        combobulate-proffer-indicators "ox")
-  :config
-  ;; BUG esc failed
-  ;; (keymap-set combobulate-proffer-map "ESC" 'cancel)
-  ;; (keymap-set combobulate-proffer-map "C-e" 'cancel)
-  )
-#+end_src
-
-** init end
-
-#+begin_src emacs-lisp :lexical t
-;; TODO write magika.el to identify file content with magika cmd
-;;; init.el ends here
 #+end_src
 
