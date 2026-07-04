@@ -330,9 +330,6 @@
 [submodule "opencc"]
 	path = lib/opencc
 	url = https://github.com/xuchunyang/emacs-opencc
-[submodule "orderless"]
-	path = lib/orderless
-	url = https://github.com/oantolin/orderless
 [submodule "org-modern"]
 	path = lib/org-modern
 	url = https://github.com/minad/org-modern
@@ -450,12 +447,6 @@
 [submodule "visual-fill-column"]
 	path = lib/visual-fill-column
 	url = https://codeberg.org/joostkremers/visual-fill-column
-[submodule "vterm"]
-	path = lib/vterm
-	url = https://github.com/akermu/emacs-libvterm
-	build-step = mkdir -p build && cd build && cmake .. && make
-	build-step = borg-byte-compile
-	build-step = borg-update-autoloads
 [submodule "vundo"]
 	path = lib/vundo
 	url = https://github.com/casouri/vundo
