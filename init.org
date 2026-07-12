@@ -1414,14 +1414,19 @@ make sure emacs server running
           extended-command-history)))
 #+end_src
 
-*** minibuffer                                                      :minibuffer:
+*** minibuffer
 
 #+begin_src emacs-lisp :lexical t
 (use-package minibuffer
   :init
   (setq enable-recursive-minibuffers t)
-  (setq completion-category-defaults nil
-        completion-category-overrides '((file (styles . (partial-completion)))))
+  (setq completion-styles '(substring flex basic))
+  (setq completion-category-overrides
+        '((file (styles . (basic partial-completion)))
+          (symbol (styles . (initials substring flex)))
+          (function (styles . (initials substring flex)))
+          (variable (styles . (initials substring flex)))
+          (command (styles . (initials substring flex)))))
 
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
@@ -2202,46 +2207,9 @@ A prefix argument means to unmark them instead."
   )
 #+end_src
 
-*** orderless
-
-#+begin_src emacs-lisp :lexical t
-;; SEE https://github.com/minad/consult/wiki#minads-orderless-configuration
-(use-package orderless
-  :demand t
-  :after vertico
-  :config
-  (setq completion-styles '(orderless basic))
-  (setq orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-category-defaults nil)
-  (setq completion-pcm-leading-wildcard t)
-
-  (orderless-define-completion-style
-      my/orderless-vertico
-    (orderless-matching-styles '(orderless-initialism
-                                 orderless-literal
-                                 orderless-regexp)))
-  (orderless-define-completion-style
-      my/orderless-corfu
-    (orderless-style-dispatchers nil)
-    (orderless-matching-styles '(orderless-literal-prefix orderless-literal orderless-flex)))
-
-  (setq completion-category-overrides
-        '((file     (styles partial-completion))
-          (command  (styles my/orderless-vertico))
-          (variable (styles my/orderless-vertico))
-          (symbol   (styles my/orderless-vertico))))
-
-  (with-eval-after-load 'pinyinlib
-    (defun ad/orderless-regexp-pinyin (args)
-      "Patch `orderless-regexp' with pinyin surpport"
-      (setf (car args) (pinyinlib-build-regexp-string (car args)))
-      args)
-    (advice-add 'orderless-regexp :filter-args #'ad/orderless-regexp-pinyin)))
-#+end_src
-
 *** corfu
 
-#+begin_src emacs-lisp :lexical t :tangle no
+#+begin_src emacs-lisp :lexical t
 (use-package corfu
   :hook (corfu-mode-hook . corfu-setup)
   :bind
@@ -2261,9 +2229,10 @@ A prefix argument means to unmark them instead."
   (setq corfu-popupinfo-delay '(nil . 0.1))
   (global-corfu-mode)
   (defun corfu-setup ()
-    (setq-local completion-styles '(my/orderless-corfu basic)
-                completion-category-overrides nil
-                completion-category-defaults nil)
+    (setq-local completion-styles '(basic substring flex)
+                ;; completion-category-overrides nil
+                ;; completion-category-defaults nil
+                )
     (corfu-history-mode)
     (corfu-popupinfo-mode))
   :config
@@ -4617,7 +4586,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
   (setq my/elisp-iemnu-generic-expression
         (mapcar #'elisp-imenu-regexp-generate
-                '(("Leafs" ("leaf"))
+                '(("Packages" ("use-package"))
                   ("Customs" ("defcustom"))
                   ("Faces" ("defface"))
                   ("Commands" ("defun" "cl-defun" "transient-define-suffix")
