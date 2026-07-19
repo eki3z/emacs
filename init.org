@@ -28,6 +28,12 @@ disable builtin package.el, use borg instead
 (setq package-quickstart nil)
 #+end_src
 
+** user-lisp dir
+
+#+begin_src emacs-lisp :lexical t
+(setq user-lisp-auto-scrape t)
+#+end_src
+
 ** frame init
 
 Implicitly resizing the Emacs frame adds to init time.
@@ -153,6 +159,7 @@ do not show default welcome message
       auto-save-list-file-prefix nil)
 (setq site-run-file nil)
 (setq load-prefer-newer t)
+(setq user-lisp-auto-scrape nil)
 (advice-add #'display-startup-echo-area-message :override #'ignore)
 #+end_src
 
@@ -280,10 +287,6 @@ suppress unneed warnings
 
 create dirs if not exists
 #+begin_src emacs-lisp :lexical t
-(defconst my/dir-lisp
-  (expand-file-name "lisp/" user-emacs-directory)
-  "User dir for external tools.")
-
 (defconst my/dir-etc
   (expand-file-name "etc/" user-emacs-directory)
   "User dir for external tools.")
@@ -307,18 +310,8 @@ create dirs if not exists
 ;; ensure dir exists
 (dolist (dir `(,my/dir-cache
                ,my/dir-etc
-               ,my/dir-debug
-               ,my/dir-lisp))
+               ,my/dir-debug))
   (make-directory dir t))
-#+end_src
-
-Packages that I'm developing or aren't part of any online repositories go in =~/.config/emacs/lisp/=.
-
-#+begin_src emacs-lisp :lexical t
-(let ((default-directory my/dir-lisp))
-  (when (file-exists-p default-directory)
-    (normal-top-level-add-to-load-path '("."))
-    (normal-top-level-add-subdirs-to-load-path)))
 #+end_src
 
 load custom files
@@ -1146,21 +1139,6 @@ make sure emacs server running
 (use-package mouse
   :init
   (setq mouse-yank-at-point t))
-
-(use-package xt-mouse
-
-  :init
-  (defun my/mouse-setup ()
-    "enable mouse and keybindings in eamcs -nw"
-    (xterm-mouse-mode)
-    (keymap-global-set "<mouse-4>" (lambda ()
-                                     (interactive)
-                                     (scroll-down 1)))
-    (keymap-global-set "<mouse-5>" (lambda ()
-                                     (interactive)
-                                     (scroll-up 1))))
-  (add-hook 'after-make-console-frame-hook #'my/mouse-setup))
-
 (use-package mwheel
   :config
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))
@@ -1359,6 +1337,8 @@ make sure emacs server running
   :init
   (setq recentf-max-saved-items nil
         recentf-auto-cleanup 15
+        recentf-show-messages nil
+        recentf-suppress-open-file-help t
         recentf-exclude
         '("\\.?cache" "-autoloads\\.el\\'" ".cask" "url" "COMMIT_EDITMSG\\'"
           "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
@@ -1389,14 +1369,7 @@ make sure emacs server running
   :config
   ;; auto-cleanup in save/load
   (advice-add 'recentf-save-list :before #'recentf-cleanup)
-  (advice-add 'recentf-load-list :after #'recentf-cleanup)
-
-  ;; silent message
-  (mapc (lambda (cmd)
-          (advice-add cmd :around #'ad/silent-message))
-        '(recentf-load-list
-          recentf-save-list
-          recentf-cleanup)))
+  (advice-add 'recentf-load-list :after #'recentf-cleanup))
 #+end_src
 
 *** savehist
@@ -1653,8 +1626,9 @@ install icons: ~brew install font-symbols-only-nerd-font~
         '((mark " " (icon 2 2)
                 " " (name 20 20 :left :elide)
                 " " modified read-only locked
-                " " (size-h 7 -1 :right)
+                " " (size 7 -1 :right)
                 " " (mode+ 16 16 :left :elide)
+                " " recency
                 " " filename-and-process+)
           (mark " " name))))
 
@@ -2024,6 +1998,8 @@ switch input methods atuomatically with modal edit, ~brew tap laishulu/macism~
         dired-recursive-deletes 'always
         dired-recursive-copies 'always)
   (setq dired-dwim-target t)
+  (setq dired-create-empty-file-in-current-directory t)
+  (setq dired-check-symlinks nil)
   (setq dired-movement-style 'cycle)
   (setq dired-hide-details-hide-symlink-targets nil)
   (setq dired-no-confirm t
@@ -2295,8 +2271,8 @@ A prefix argument means to unmark them instead."
 
   ;; NOTE
   ;; 1. hidden: add regexp in `consult-buffer-filter' or filter with :predicate
-  ;;    in `consult--source-buffer'
-  ;; 2. extract: set :filter nil and :predicate in consult--source-*
+  ;;    in `consult-source-buffer'
+  ;; 2. extract: set :filter nil and :predicate in consult-source-*
 
   (appendq! consult-buffer-filter '("\\`\\*.*\\*\\'"
                                     "\\`.*\\.el\\.gz\\'"
@@ -2306,11 +2282,11 @@ A prefix argument means to unmark them instead."
                                     "\\`\\*vterm\\*.*\\'"))
 
   ;; enable hidden buffer preview
-  (consult-customize consult--source-hidden-buffer :state #'consult--buffer-state)
+  (consult-customize consult-source-hidden-buffer :state #'consult--buffer-state)
 
-  ;; filter `consult--source-buffer'
+  ;; filter `consult-source-buffer'
   (consult-customize
-   consult--source-buffer
+   consult-source-buffer
    :items
    (lambda ()
      (consult--buffer-query
@@ -2322,7 +2298,7 @@ A prefix argument means to unmark them instead."
           (not (eq mode 'dired-mode)))))))
 
   ;; Dired-source
-  (defvar consult--source-dired
+  (defvar consult-source-dired
     `(:name     "Dired"
       :narrow   ?d
       :hidden   t
@@ -2337,10 +2313,10 @@ A prefix argument means to unmark them instead."
           :sort 'visibility
           :as #'buffer-name)))
     "Dired buffer candidate source for `consult-buffer'.")
-  (add-to-list 'consult-buffer-sources 'consult--source-dired)
+  (add-to-list 'consult-buffer-sources 'consult-source-dired)
 
   ;; atomic-chrome buffers
-  (defvar consult--source-atomic
+  (defvar consult-source-atomic
     `(:name     "Atomic"
       :narrow   ?a
       :hidden   t
@@ -2358,10 +2334,10 @@ A prefix argument means to unmark them instead."
             (with-current-buffer buffer
               (bound-and-true-p atomic-chrome-edit-mode))))))
     "Atomic buffer candidate source for `consult-buffer'.")
-  (add-to-list 'consult-buffer-sources 'consult--source-atomic)
+  (add-to-list 'consult-buffer-sources 'consult-source-atomic)
 
   ;; xwidget buffers
-  (defvar consult--source-xwidget
+  (defvar consult-source-xwidget
     `(:name     "Xwidget"
       :narrow   ?x
       :hidden   t
@@ -2376,10 +2352,10 @@ A prefix argument means to unmark them instead."
           :as #'buffer-name
           :filter nil)))
     "Xwidget buffer candidate source for `consult-buffer'.")
-  (add-to-list 'consult-buffer-sources 'consult--source-xwidget)
+  (add-to-list 'consult-buffer-sources 'consult-source-xwidget)
 
   ;; Blob-source
-  (defvar consult--source-blob
+  (defvar consult-source-blob
     `(:name     "Blob"
       :narrow   ?g
       :hidden   t
@@ -2396,11 +2372,11 @@ A prefix argument means to unmark them instead."
           (lambda (buffer)
             (string-match-p "\\`.+~.+~\\'" (buffer-name buffer))))))
     "Blob buffer candidate source for `consult-buffer'.")
-  (add-to-list 'consult-buffer-sources 'consult--source-blob)
+  (add-to-list 'consult-buffer-sources 'consult-source-blob)
 
   ;; Org-source
   (autoload 'org-buffer-list "org")
-  (defvar consult--source-org
+  (defvar consult-source-org
     `(:name     "Org"
       :narrow   ?o
       :hidden   t
@@ -2415,7 +2391,7 @@ A prefix argument means to unmark them instead."
           :sort 'visibility
           :as #'buffer-name)))
     "Org buffer candidate source for `consult-buffer'.")
-  (add-to-list 'consult-buffer-sources 'consult--source-org)
+  (add-to-list 'consult-buffer-sources 'consult-source-org)
 
   ;; ------------------------- Preview ------------------------------
 
@@ -2423,8 +2399,8 @@ A prefix argument means to unmark them instead."
 
   ;; disable preview
   (consult-customize
-   consult-recent-file consult-bookmark consult--source-recent-file
-   consult--source-project-recent-file consult--source-bookmark
+   consult-recent-file consult-bookmark consult-source-recent-file
+   consult-source-project-recent-file consult-source-bookmark
    consult-ripgrep consult-git-grep consult-grep
    :preview-key nil)
 
@@ -2477,13 +2453,13 @@ A prefix argument means to unmark them instead."
           (sh-mode
            :types ((?f "Functions"  font-lock-function-name-face)
                    (?v "Variables"  font-lock-variable-name-face)))
-          (md-ts-mode
-           :types ((?1 "H1" md-ts-header-1)
-                   (?2 "H2" md-ts-header-2)
-                   (?3 "H3" md-ts-header-3)
-                   (?4 "H4" md-ts-header-4)
-                   (?5 "H5" md-ts-header-5)
-                   (?6 "H6" md-ts-header-6)))))
+          (markdown-ts-mode
+           :types ((?1 "H1" markdown-ts-header-1)
+                   (?2 "H2" markdown-ts-header-2)
+                   (?3 "H3" markdown-ts-header-3)
+                   (?4 "H4" markdown-ts-header-4)
+                   (?5 "H5" markdown-ts-header-5)
+                   (?6 "H6" markdown-ts-header-6)))))
 
   (use-package consult-dir
     :init
@@ -3037,6 +3013,7 @@ https://protesilaos.com/emacs/modus-themes
   (setq ibuffer-expert t
         ibuffer-display-summary nil
         ibuffer-show-empty-filter-groups nil
+        ibuffer-human-readable-size t
         ibuffer-marked-char ?*)
 
   (defun ibuffer-toggle ()
@@ -3081,8 +3058,9 @@ https://protesilaos.com/emacs/modus-themes
   (setq ibuffer-formats
         '((mark " " (name 20 20 :left :elide)
                 " " modified read-only locked
-                " " (size-h 7 -1 :right)
+                " " (size 7 -1 :right)
                 " " (mode 16 16 :left :elide)
+                " " recency
                 " " filename-and-process)
           (mark " " name)))
 
@@ -3095,22 +3073,7 @@ https://protesilaos.com/emacs/modus-themes
 
   :config
 
-  (use-package ibuffer-vc :demand t)
-
-  ;; Use human readable Size column instead of original one
-  (define-ibuffer-column size-h
-    (:name "Size"
-     :inline t
-     :header-mouse-map ibuffer-size-header-map
-     :summarizer
-     (lambda (column-strings)
-       (cl-loop for s in column-strings
-                sum (get-text-property (1- (length s)) 'size s) into total
-                finally return (file-size-human-readable total))))
-    (let ((size (buffer-size)))
-      (propertize (file-size-human-readable size)
-                  'size size)))
-  )
+  (use-package ibuffer-vc :demand t))
 
 ;; ;; Collapse
 ;; (defun ibuffer-collapse-all-filter-groups ()
@@ -3516,6 +3479,7 @@ https://protesilaos.com/emacs/modus-themes
   :init
   (setq show-paren-style 'parenthesis
         show-paren-delay 0
+        show-paren-not-in-comments-or-strings t
         show-paren-context-when-offscreen 'overlay))
 #+end_src
 
@@ -4430,7 +4394,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
         (js-json-mode . json-ts-mode)
         (javascript-mode . js-ts-mode)
         (python-mode . python-ts-mode)
-        ;; (markdown-mode . markdown-ts-mode)
+        (markdown-mode . markdown-ts-mode)
         (sh-mode . bash-ts-mode)))
 #+end_src
 
@@ -4490,7 +4454,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 (use-package c-ts-mode
   :init
   ;; google style
-  (setq c-ts-mode-indent-offset 2
+  (setq c-ts-indent-offset 2
         c-ts-mode-indent-style 'gnu))
 #+end_src
 
@@ -4731,13 +4695,11 @@ to define a org presentation like in system craft
 *** markdown
 
 #+begin_src emacs-lisp :lexical t
-;; (use-package markdown-mode)
-
-(use-package md
-  :mode ("\\.md\\'" . md-ts-mode)
-  :hook (md-ts-mode-hook . md-toc-mode)
+(use-package markdown-ts-mode
+  :mode ("\\.md\\'" . markdown-ts-mode)
   :init
-  (setq md-ts-mode-fontify-fenced-blocks-natively t))
+  (setq markdown-ts-hide-markup nil
+        markdown-ts-default-folding 'show-all))
 #+end_src
 
 *** grip-mode
