@@ -1084,16 +1084,10 @@ elp is useful for seeing which functions in a package are "hot".
         '(
           bash-language-server shellcheck shfmt
           ty ruff
-          lua-language-server luacheck stylua
           yaml-language-server yamllint
-          clangd clang-format
-          c3-lsp
           vim-language-server
           typescript-language-server oxlint oxfmt
           vue-language-server
-          rescript-language-server
-          zls
-          taplo
           jq yq))
   (mason-setup)
   (defun my/mason-install ()
@@ -1673,7 +1667,6 @@ install icons: ~brew install font-symbols-only-nerd-font~
 
   (setq duplexer-alist
         '((olivetti-mode . (no-margin no-hl-line (focus-mode 1)))
-          (redacted-mode . (no-margin no-hl-line no-paren no-cursor read-only))
           (smerge-mode   . (no-margin no-paren (save-place-local-mode -1)))))
 
   ;; (appendq! duplexer-fallback-alist '((my/meow-temp-motion . meow--temp-state-before)))
@@ -2183,46 +2176,6 @@ A prefix argument means to unmark them instead."
   )
 #+end_src
 
-*** corfu
-
-#+begin_src emacs-lisp :lexical t
-(use-package corfu
-  :hook (corfu-mode-hook . corfu-setup)
-  :bind
-  (:map corfu-mode-map
-   ("M-h" . corfu-popupinfo-toggle))
-  :init
-  ;; (setopt tab-always-indent 'complete)
-  (setq corfu-count 15
-        corfu-scroll-margin 1
-        corfu-cycle t
-        ;; corfu-on-exact-match nil
-        corfu-quit-no-match 'separator)
-  (setq corfu-auto t
-        corfu-auto-trigger "."
-        corfu-auto-prefix 1
-        corfu-auto-delay 0.1)
-  (setq corfu-popupinfo-delay '(nil . 0.1))
-  (global-corfu-mode)
-  (defun corfu-setup ()
-    (setq-local completion-styles '(basic substring flex)
-                ;; completion-category-overrides nil
-                ;; completion-category-defaults nil
-                )
-    (corfu-history-mode)
-    (corfu-popupinfo-mode))
-  :config
-
-  (use-package cape
-    :demand t
-    :bind ("C-c p" . cape-prefix-map)
-    :config
-    (setq completion-at-point-functions (list 'cape-dabbrev 'cape-file)))
-  )
-#+end_src
-
-*** consult                                                         :minibuffer:
-
 #+begin_src emacs-lisp :lexical t
 (use-package consult
   :after vertico
@@ -2314,27 +2267,6 @@ A prefix argument means to unmark them instead."
           :as #'buffer-name)))
     "Dired buffer candidate source for `consult-buffer'.")
   (add-to-list 'consult-buffer-sources 'consult-source-dired)
-
-  ;; atomic-chrome buffers
-  (defvar consult-source-atomic
-    `(:name     "Atomic"
-      :narrow   ?a
-      :hidden   t
-      :category buffer
-      :face     dired-warning
-      :state    ,#'consult--buffer-state
-      :items
-      ,(lambda ()
-         (consult--buffer-query
-          :sort 'visibility
-          :as #'buffer-name
-          :filter nil
-          :predicate
-          (lambda (buffer)
-            (with-current-buffer buffer
-              (bound-and-true-p atomic-chrome-edit-mode))))))
-    "Atomic buffer candidate source for `consult-buffer'.")
-  (add-to-list 'consult-buffer-sources 'consult-source-atomic)
 
   ;; xwidget buffers
   (defvar consult-source-xwidget
@@ -2640,8 +2572,6 @@ $0`(yas-escape-text yas-selected-text)`")
       (pcase major-mode
         ((guard (and (fboundp 'org-src-edit-buffer-p) (org-src-edit-buffer-p)))
          '(:both ("meow" "org-src" "buffer-position" "buffer-size" "flymake")))
-        ((guard (bound-and-true-p atomic-chrome-edit-mode))
-         '(:both ("meow" "atomic-chrome" "buffer-name" "buffer-position" "flymake")))
         ((guard (bound-and-true-p magit-blob-mode))
          '(:both ("meow" "magit-blob" "buffer-position" "buffer-size")))
         ((guard (or (memq major-mode '(git-commit-elisp-text-mode git-rebase-mode))
@@ -2665,27 +2595,6 @@ $0`(yas-escape-text yas-selected-text)`")
 
 #+begin_src emacs-lisp :lexical t
 (use-package oboe)
-#+end_src
-
-*** insecure-lock
-
-#+begin_src emacs-lisp :lexical t
-(use-package insecure-lock
-  :bind
-  ("s-q" . insecure-lock-enter)
-  :init
-  (setq insecure-lock-require-password nil)
-  (setq insecure-lock-mode-hook '(insecure-lock-redact-with-minibuf insecure-lock-posframe))
-  (defun insecure-lock-redact-with-minibuf ()
-    "`insecure-lock' module that redacts buffers.
-No changes in mode-line."
-    (unless (require 'redacted nil t) (user-error "Package `redacted' not available"))
-    (let ((arg (if insecure-lock-mode 1 -1)))
-      (dolist (frame (frame-list))
-        ;; NOTE call redacted-mode also in minibuf
-        (dolist (window (window-list frame t))
-          (with-current-buffer (window-buffer window)
-            (redacted-mode arg)))))))
 #+end_src
 
 *** page-break-lines
@@ -2909,9 +2818,6 @@ https://protesilaos.com/emacs/modus-themes
           (("*Warnings*" "*Messages*") :size 0.3 :align 'below)
           ("\\*[Wo]*Man.*\\*" :regexp t :popup t :select t :size 0.5 :align 'below)
           ;; third-party
-
-          ;; BUG other,no-select
-          ;; ("elisp-demos.org" :select nil :other t)
 
           ("*format-all-errors*" :size 0.3 :align 'below)
           (helpful-mode :other t :select nil)
@@ -3166,47 +3072,6 @@ https://protesilaos.com/emacs/modus-themes
   :config
   (appendq! undo-hl-undo-commands '(meow-undo meow-redo))
   (setq undo-hl-flash-duration 0.15))
-#+end_src
-
-*** atomic-chrome
-
-#+begin_src emacs-lisp :lexical t
-(use-package atomic-chrome
-  :hook (after-init-hook . atomic-chrome-start-server)
-  :init
-  (setq atomic-chrome-create-file-strategy `(,(list (concat my/dir-cache "atomic"))))
-  (setq atomic-chrome-buffer-open-style 'full)
-  (setq atomic-chrome-auto-remove-file t)
-  (setq atomic-chrome-make-file-save-initial-contents t)
-  (setq atomic-chrome-url-major-mode-alist
-        '(("ramdajs\\.com"           . js-ts-mode)
-          ("codesandbox\\.io"        . js-ts-mode)
-          ("w3schools\\.com"         . js-ts-mode)
-          ("jsfiddle\\.net"          . js-ts-mode)
-          ("github\\.com"            . gfm-mode)
-          ("gitlab\\.com"            . gfm-mode)
-          ("reddit\\.com"            . gfm-mode)
-          ("emacs-china\\.org"       . gfm-mode)
-          ("stackexchange\\.com"     . gfm-mode)
-          ("stackoverflow\\.com"     . gfm-mode)
-          ("leetcode\\.com"          . typescript-ts-mode)
-          ("typescriptlang\\.org"    . typescript-ts-mode)
-          ("react\\.docschina\\.org" . js-jsx-mode)
-          ("react\\.dev"             . js-jsx-mode)
-          ("play\\.d2lang\\.com"     . d2-ts-mode)
-          ("joinquant\\.com"         . python-ts-mode)))
-
-  :config
-  ;; HACK change major mode if website extension is wrong
-  (defun atomic-edit-setup ()
-    (let ((infos (atomic-chrome-get-info (current-buffer))))
-      (when (and buffer-file-name
-                 (string= (nth 2 infos) ".js")
-                 (string-match-p "react\\.docschina\\.org" (nth 0 infos))
-                 (not (eq major-mode 'js-jsx-mode)))
-        (js-jsx-mode))))
-  (add-hook 'atomic-chrome-edit-mode-hook #'atomic-edit-setup)
-  )
 #+end_src
 
 *** hungry-delete
@@ -3626,17 +3491,6 @@ https://protesilaos.com/emacs/modus-themes
        ((>= s 3) (concat (substring str 0 -12) " G"))
        (t str))))
   (advice-add 'profiler-format-number :filter-return #'ad/profiler-bytes-h))
-#+end_src
-
-*** etrace
-#+begin_src emacs-lisp :lexical t
-(use-package etrace)
-#+end_src
-
-*** reverso                                                          :translate:
-
-#+begin_src emacs-lisp :lexical t
-(use-package reverso)
 #+end_src
 
 *** xr
@@ -4496,21 +4350,10 @@ Otherwise, behave like `magit-display-buffer-traditional'."
         web-mode-enable-html-entities-fontification t)
   )
 
-(use-package jq-ts-mode)
-
 (use-package mermaid-mode
   :mode "\\.\\(mmd\\|mermaid\\)"
   :init
   (setq mermaid-output-format ".pdf"))
-
-(use-package zig-ts-mode
-  :mode "\\.zig\\'")
-
-(use-package moonbit-mode
-  :mode "\\.mbt\\'")
-
-(use-package tera-mode
-  :mode "\\.tera\\'")
 
 (use-package csv-mode)
 
@@ -4518,11 +4361,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
 (use-package ssh-config-mode)
 
-(use-package graphql-mode)
-
 (use-package pip-requirements)
-
-(use-package adoc-mode)
 #+end_src
 
 *** elisp
@@ -4604,14 +4443,6 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 (use-package lisp-keyword-indent
   :hook (after-init-hook . lisp-keyword-indent-mode)
   :init (setq lisp-indent-function 'lisp-indent-function))
-
-(use-package eros
-  :hook (after-init-hook . eros-mode))
-
-(use-package elisp-demos
-  :commands elisp-demos-find-demo
-  :init
-  (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 
 (use-package helpful
   :init
