@@ -1,8 +1,5 @@
 ## switch: perl -i -p -e 's|https://(.*?)/|git@\1:|g' .gitmodules
 
-[submodule "adoc-mode"]
-	path = lib/adoc-mode
-	url = https://github.com/bbatsov/adoc-mode
 [submodule "ansi"]
 	path = lib/ansi
 	url = https://github.com/rejeep/ansi.el
@@ -12,9 +9,6 @@
 [submodule "async"]
 	path = lib/async
 	url = https://github.com/jwiegley/emacs-async
-[submodule "atomic-chrome"]
-	path = lib/atomic-chrome
-	url = https://github.com/alpha22jp/atomic-chrome
 [submodule "authinfo-color-mode"]
 	path = lib/authinfo-color-mode
 	url = https://github.com/tecosaur/authinfo-color-mode.git
@@ -34,12 +28,6 @@
 [submodule "browse-at-remote"]
 	path = lib/browse-at-remote
 	url = https://github.com/rmuslimov/browse-at-remote
-[submodule "c3-ts-mode"]
-	path = lib/c3-ts-mode
-	url = https://github.com/c3lang/c3-ts-mode.git
-[submodule "cape"]
-	path = lib/cape
-	url = https://github.com/minad/cape
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql.git
@@ -70,11 +58,6 @@
 [submodule "consult-yasnippet"]
 	path = lib/consult-yasnippet
 	url = https://github.com/mohkale/consult-yasnippet
-[submodule "corfu"]
-	path = lib/corfu
-	load-path = .
-	load-path = extensions
-	url = https://github.com/minad/corfu
 [submodule "csv-mode"]
 	path = lib/csv-mode
 	url = https://github.com/emacsmirror/csv-mode.git
@@ -111,12 +94,6 @@
 [submodule "edit-indirect"]
 	path = lib/edit-indirect
 	url = https://github.com/Fanael/edit-indirect
-[submodule "elisp-demos"]
-	path = lib/elisp-demos
-	url = https://github.com/xuchunyang/elisp-demos
-[submodule "elisp-refs"]
-	path = lib/elisp-refs
-	url = https://github.com/Wilfred/elisp-refs
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = https://github.com/skeeto/emacsql.git
@@ -130,12 +107,6 @@
 [submodule "epkg"]
 	path = lib/epkg
 	url = https://github.com/emacscollective/epkg.git
-[submodule "eros"]
-	path = lib/eros
-	url = https://github.com/xiongtx/eros
-[submodule "etrace"]
-	path = lib/etrace
-	url = https://github.com/aspiers/etrace.git
 [submodule "exec-path-from-shell"]
 	path = lib/exec-path-from-shell
 	url = https://github.com/purcell/exec-path-from-shell
@@ -184,18 +155,12 @@
 [submodule "gitignore-templates\\"]
 	path = lib/gitignore-templates\\
 	url = https://github.com/liuyinz/emacs.d.git
-[submodule "graphql-ts-mode"]
-	path = lib/graphql-ts-mode
-	url = https://git.sr.ht/~joram/graphql-ts-mode
 [submodule "grip-mode"]
 	path = lib/grip-mode
 	url = https://github.com/seagle0128/grip-mode
 [submodule "handlebars-mode"]
 	path = lib/handlebars-mode
 	url = https://github.com/danielevans/handlebars-mode
-[submodule "haskell-ts-mode"]
-	path = lib/haskell-ts-mode
-	url = https://codeberg.org/pranshu/haskell-ts-mode
 [submodule "helpful"]
 	path = lib/helpful
 	url = https://github.com/Wilfred/helpful
@@ -217,9 +182,6 @@
 [submodule "hungry-delete"]
 	path = lib/hungry-delete
 	url = https://github.com/nflath/hungry-delete
-[submodule "hydra"]
-	path = lib/hydra
-	url = https://github.com/abo-abo/hydra
 [submodule "ibuffer-vc"]
 	path = lib/ibuffer-vc
 	url = https://github.com/purcell/ibuffer-vc
@@ -229,18 +191,12 @@
 [submodule "inheritenv"]
 	path = lib/inheritenv
 	url = https://github.com/purcell/inheritenv
-[submodule "insecure-lock"]
-	path = lib/insecure-lock
-	url = https://github.com/kchanqvq/insecure-lock
 [submodule "isolate"]
 	path = lib/isolate
 	url = https://github.com/emacsattic/isolate.git
 [submodule "jinx"]
 	path = lib/jinx
 	url = https://github.com/minad/jinx
-[submodule "jq-ts-mode"]
-	path = lib/jq-ts-mode
-	url = https://github.com/nverno/jq-ts-mode
 [submodule "keycast"]
 	path = lib/keycast
 	url = https://github.com/tarsius/keycast
@@ -265,9 +221,6 @@
 [submodule "magit"]
 	path = lib/magit
 	url = https://github.com/magit/magit
-[submodule "magit-gh"]
-	path = lib/magit-gh
-	url = https://github.com/jonathanchu/magit-gh
 [submodule "marginalia"]
 	path = lib/marginalia
 	url = https://github.com/minad/marginalia
@@ -292,18 +245,12 @@
 [submodule "mode-minder"]
 	path = lib/mode-minder
 	url = https://github.com/jdtsmith/mode-minder.git
-[submodule "moonbit-mode"]
-	path = lib/moonbit-mode
-	url = https://github.com/cxa/moonbit-mode.git
 [submodule "nerd-icons"]
 	path = lib/nerd-icons
 	url = https://github.com/rainstormstudio/nerd-icons.el
 [submodule "nerd-icons-completion"]
 	path = lib/nerd-icons-completion
 	url = https://github.com/rainstormstudio/nerd-icons-completion
-[submodule "nerd-icons-corfu"]
-	path = lib/nerd-icons-corfu
-	url = https://github.com/LuigiPiucco/nerd-icons-corfu
 [submodule "nerd-icons-dired"]
 	path = lib/nerd-icons-dired
 	url = https://github.com/rainstormstudio/nerd-icons-dired
@@ -348,12 +295,6 @@
 [submodule "pip-requirements"]
 	path = lib/pip-requirements
 	url = https://github.com/Wilfred/pip-requirements.el
-[submodule "plz"]
-	path = lib/plz
-	url = https://github.com/alphapapa/plz.el
-[submodule "plz-see"]
-	path = lib/plz-see
-	url = https://github.com/astoff/plz-see.el
 [submodule "popper"]
 	path = lib/popper
 	url = https://github.com/karthink/popper
@@ -369,9 +310,6 @@
 [submodule "rainbow-delimiters"]
 	path = lib/rainbow-delimiters
 	url = https://github.com/Fanael/rainbow-delimiters
-[submodule "redacted"]
-	path = lib/redacted
-	url = https://github.com/bkaestner/redacted.el
 [submodule "relint"]
 	path = lib/relint
 	url = https://github.com/mattiase/relint
@@ -384,9 +322,6 @@
 [submodule "request"]
 	path = lib/request
 	url = https://github.com/tkf/emacs-request
-[submodule "reverso"]
-	path = lib/reverso
-	url = https://github.com/SqrtMinusOne/reverso.el
 [submodule "rg"]
 	path = lib/rg
 	url = https://github.com/dajva/rg.el
@@ -402,15 +337,9 @@
 [submodule "sis"]
 	path = lib/sis
 	url = https://github.com/laishulu/emacs-smart-input-source
-[submodule "spinner"]
-	path = lib/spinner
-	url = https://github.com/Malabarba/spinner.el
 [submodule "ssh-config-mode"]
 	path = lib/ssh-config-mode
 	url = https://github.com/peterhoeg/ssh-config-mode-el
-[submodule "tera-mode"]
-	path = lib/tera-mode
-	url = https://github.com/svavs/tera-mode.git
 [submodule "transient"]
 	path = lib/transient
 	url = https://github.com/magit/transient
@@ -424,15 +353,9 @@
 	branch = master
 	build-step = JOBS=$(nproc) ./batch.sh&
 	disabled = true
-[submodule "treepy"]
-	path = lib/treepy
-	url = https://github.com/volrath/treepy.el
 [submodule "undo-fu-session"]
 	path = lib/undo-fu-session
 	url = https://codeberg.org/ideasman42/emacs-undo-fu-session
-[submodule "uniline"]
-	path = lib/uniline
-	url = https://github.com/tbanel/uniline
 [submodule "valign"]
 	path = lib/valign
 	url = https://github.com/casouri/valign
@@ -474,6 +397,3 @@
 [submodule "yasnippet-collection"]
 	path = lib/yasnippet-collection
 	url = https://github.com/eki3z/yasnippet-collection.git
-[submodule "zig-ts-mode"]
-	path = lib/zig-ts-mode
-	url = https://codeberg.org/meow_king/zig-ts-mode
