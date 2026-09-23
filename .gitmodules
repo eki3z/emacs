@@ -85,9 +85,6 @@
 [submodule "dotenv-mode"]
 	path = lib/dotenv-mode
 	url = https://github.com/preetpalS/emacs-dotenv-mode
-[submodule "duplexer"]
-	path = lib/duplexer
-	url = https://github.com/eki3z/duplexer.el
 [submodule "easy-escape"]
 	path = lib/easy-escape
 	url = https://github.com/cpitclaudel/easy-escape
@@ -227,6 +224,9 @@
 [submodule "markdown-mode"]
 	path = lib/markdown-mode
 	url = https://github.com/jrblevin/markdown-mode
+[submodule "markdown-ts-appear"]
+	path = lib/markdown-ts-appear
+	url = https://github.com/Thysrael/markdown-ts-appear
 [submodule "mason"]
 	path = lib/mason
 	url = https://github.com/deirn/mason.el
