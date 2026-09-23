@@ -91,6 +91,9 @@
 [submodule "edit-indirect"]
 	path = lib/edit-indirect
 	url = https://github.com/Fanael/edit-indirect
+[submodule "elisp-refs"]
+	path = lib/elisp-refs
+	url = https://github.com/Wilfred/elisp-refs
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = https://github.com/skeeto/emacsql.git
@@ -267,7 +270,7 @@
 	url = https://github.com/gynamics/oboe.el
 [submodule "obvious"]
 	path = lib/obvious
-	url = https://github.com/emacsmirror/csv-mode.git
+	url = https://github.com/alphapapa/obvious.el
 [submodule "olivetti"]
 	path = lib/olivetti
 	url = https://github.com/rnkn/olivetti
