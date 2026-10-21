@@ -1075,28 +1075,6 @@ elp is useful for seeing which functions in a package are "hot".
   :hook (after-make-graphic-frame-hook . exec-path-from-shell-initialize))
 #+end_src
 
-*** mason
-#+begin_src emacs-lisp :lexical t
-(use-package mason
-  :demand t
-  :config
-  (setq my/mason-list
-        '(
-          bash-language-server shellcheck shfmt
-          ty ruff
-          yaml-language-server yamllint
-          vim-language-server
-          typescript-language-server oxlint oxfmt
-          vue-language-server
-          jq yq))
-  (mason-setup)
-  (defun my/mason-install ()
-    (interactive)
-    (dolist (pkg my/mason-list)
-      (unless (mason-installed-p pkg)
-        (ignore-errors (mason-install pkg))))))
-#+end_src
-
 *** server
 
 make sure emacs server running
@@ -1348,14 +1326,6 @@ make sure emacs server running
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
-#+end_src
-
-*** subword
-
-#+begin_src emacs-lisp :lexical t
-(use-package subword
-  :hook ((prog-mode-hook . subword-mode)
-         (minibuffer-setup-hook . subword-mode)))
 #+end_src
 
 *** delsel
@@ -3232,41 +3202,6 @@ https://protesilaos.com/emacs/modus-themes
          (prog-mode-hook . goto-address-prog-mode)))
 #+end_src
 
-*** webjump
-
-#+begin_src emacs-lisp :lexical t
-(use-package webjump
-  :init
-  (setq webjump-sites
-        '(;; Internet search engines.
-          ("StackOverFlow" . [simple-query "stackoverflow.com"
-                                           "stackoverflow.com/search?q=" ""])
-          ("Google" . [simple-query "www.google.com"
-                                    "www.google.com/search?q=" ""])
-          ("Github" . [simple-query "www.github.com"
-                                    "www.github.com/search?q=" ""])
-          ("Melpa" . [simple-query "melpa.org"
-                                   "melpa.org/#/?q=" ""])
-          ("Baidu" . [simple-query "www.baidu.com"
-                                   "www.baidu.com/s?wd=" ""])
-          ("Zhihu" . [simple-query "www.zhihu.com"
-                                   "www.zhihu.com/search?type=content&q=" ""])
-          ("V2ex" . [simple-query "www.sov2ex.com"
-                                  "www.sov2ex.com/?q=" ""])
-          ("Wiki" . [simple-query "wikipedia.org"
-                                  "wikipedia.org/wiki/" ""])))
-  :config
-  ;; HACK support visual selection texts in webjump()
-  (defun ad/webjump-read-string-enable-visual (prompt)
-    "Patch for visual selection avaible"
-    (let* ((region-text (if (use-region-p)
-                            (buffer-substring-no-properties
-                             (region-beginning)
-                             (region-end)) nil))
-           (input (read-string (concat prompt ": ") region-text)))
-      (if (webjump-null-or-blank-string-p input) nil input)))
-  (advice-add 'webjump-read-string :override #'ad/webjump-read-string-enable-visual))
-#+end_src
 *** paren
 
 #+begin_src emacs-lisp :lexical t
@@ -3500,19 +3435,6 @@ https://protesilaos.com/emacs/modus-themes
   )
 #+end_src
 
-*** epg-config
-
-#+begin_src emacs-lisp :lexical t
-(use-package epg-config
-  :init
-  ;; to read passphrase from minibuffer
-  (setq epg-pinentry-mode 'loopback))
-
-;; (use-package pass
-;;   :init
-;;   (setq pass-show-keybindings nil))
-#+end_src
-
 *** auth-source                                                       :security:
 
 #+begin_src emacs-lisp :lexical t
@@ -3744,46 +3666,6 @@ If CN is non-nil, search in zh-CN documentation."
     (browse-url (concat "https://cheatsheets.zip/" (if cn (concat "zh-CN/docs/" ref ".html") ref)))))
 #+end_src
 
-*** apheleia                                                            :format:
-
-#+begin_src emacs-lisp :lexical t
-(use-package apheleia
-  :hook ((typescript-ts-mode-hook js-ts-mode-hook python-ts-mode-hook bash-ts-mode-hook)
-         . apheleia-mode)
-  :init
-  (setq apheleia-hide-log-buffers t)
-  (defun my/format ()
-    "Formatting current buffer."
-    (interactive)
-    (unless buffer-read-only
-      (cond
-       ((memq major-mode '(gitconfig-mode emacs-lisp-mode lisp-interaction-mode))
-        (indent-whole-buffer))
-       (t
-        (call-interactively #'apheleia-format-buffer)))))
-
-  ;; do not format if functions return non-nil
-  (setq apheleia-skip-functions
-        '(yas-current-field active-minibuffer-window))
-
-  :config
-  (alist-set! apheleia-formatters
-              '((shfmt . ("shfmt" "-i" "2" "-bn" "-ci"))
-                (stylua . ("stylua" "--search-parent-directories" "-"))))
-  (alist-set! apheleia-mode-alist
-              '((python-mode . (ruff ruff-isort))
-                (python-ts-mode . (ruff ruff-isort))
-                (bash-ts-mode . shfmt)
-                ((json-ts-mode js-json-mode) . yq-json)
-
-                ;; (ruby-ts-mode . rubocop)
-                ;; ((html-mode html-ts-mode mhtml-mode mhtml-ts-mode nxml-mode) . biome)
-                ;; ((css-mode css-ts-mode) . biome)
-                ;; ((json-mode js-json-mode json-ts-mode) . biome)
-                ;; ((js-mode js-ts-mode js-jsx-mode typescript-ts-mode tsx-ts-mode) . biome)
-                )))
-#+end_src
-
 *** vc                                                                     :git:
 
 #+begin_src emacs-lisp :lexical t
@@ -3804,21 +3686,6 @@ If CN is non-nil, search in zh-CN documentation."
     (transient-append-suffix 'magit-tag
       '(1 0 -1)
       '("c" "changelog" git-cliff-menu))))
-#+end_src
-
-*** gitignore-templates                                                    :git:
-
-#+begin_src emacs-lisp :lexical t
-(use-package gitignore-templates
-  :init
-  (setq gitignore-templates-api 'gitignore.io)
-  ;; Integrate with `magit-gitignore'
-  (with-eval-after-load 'magit-gitignore
-    (require 'gitignore-templates nil t)
-    (transient-append-suffix 'magit-gitignore '(0)
-      ["Template"
-       ("n" "new file" gitignore-templates-new-file)
-       ("i" "insert pattern" gitignore-templates-insert)])))
 #+end_src
 
 *** browse-at-remote                                                       :git:
@@ -4145,15 +4012,9 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 #+begin_src emacs-lisp :lexical t
 
 (use-package typescript-ts-mode
-  :mode "\\.ts\\'"
-  ;; :hook (typescript-ts-mode-hook . typescript-ts-mode-setup)
-  ;; :init
-  ;; (defun typescript-ts-mode-setup ()
-  ;;   (add-hook 'post-self-insert-hook #'ah/typescript-generics-angle-pair nil t))
-  )
+  :mode "\\.ts\\'")
 
 (use-package web-mode
-  ;; :hook (web-mode-hook . web-mode-setup)
   :mode "\\.\\(htm\\|html\\|phtml\\|php|[gj]sp\\|as[cp]x\\|erb\\|djhtml\\|hbs\\|ejs\\|jade\\|swig\\|tm?pl\\)$"
   :init
   (setq web-mode-markup-indent-offset 2
@@ -4297,10 +4158,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
 
 #+begin_src emacs-lisp :lexical t
 (use-package python
-  :mode ("\\.pythonrc\\'" . python-ts-mode)
-  :bind
-  (:map inferior-python-mode-map
-   ("C-l" . comint-clear-buffer)))
+  :mode ("\\.pythonrc\\'" . python-ts-mode))
 #+end_src
 
 *** vue
@@ -4726,11 +4584,5 @@ The DWIM behaviour of this command is as follows:
       (append-to-file (concat "\nPATH_add " binpath) nil filepath)
       (envrc--run-direnv "allow")
       (envrc--run-direnv "reload"))))
-
-;; (use-package mise
-;;   :hook (after-init-hook . global-mise-mode)
-;; :init
-;; ;; (setq mise-debug t)
-;; )
 #+end_src
 

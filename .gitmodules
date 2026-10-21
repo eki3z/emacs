@@ -3,9 +3,6 @@
 [submodule "ansi"]
 	path = lib/ansi
 	url = https://github.com/rejeep/ansi.el
-[submodule "apheleia"]
-	path = lib/apheleia
-	url = https://github.com/radian-software/apheleia
 [submodule "async"]
 	path = lib/async
 	url = https://github.com/jwiegley/emacs-async
@@ -149,9 +146,6 @@
 [submodule "git-timemachine"]
 	path = lib/git-timemachine
 	url = https://codeberg.org/pidu/git-timemachine
-[submodule "gitignore-templates"]
-	path = lib/gitignore-templates
-	url = https://github.com/xuchunyang/gitignore-templates.el
 [submodule "gitignore-templates\\"]
 	path = lib/gitignore-templates\\
 	url = https://github.com/liuyinz/emacs.d.git
@@ -230,9 +224,6 @@
 [submodule "markdown-ts-appear"]
 	path = lib/markdown-ts-appear
 	url = https://github.com/Thysrael/markdown-ts-appear
-[submodule "mason"]
-	path = lib/mason
-	url = https://github.com/deirn/mason.el
 [submodule "meow"]
 	path = lib/meow
 	url = https://github.com/meow-edit/meow
