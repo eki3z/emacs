@@ -1067,7 +1067,7 @@ elp is useful for seeing which functions in a package are "hot".
               `(,no-littering-var-directory ,no-littering-etc-directory))))
 #+end_src
 
-*** exec-path-from-path                                                  :shell:
+*** exec-path-from-path
 
 #+begin_src emacs-lisp :lexical t
 (use-package exec-path-from-shell
@@ -2011,7 +2011,7 @@ A prefix argument means to unmark them instead."
   (setopt dired-preview-kill-buffers-method (cons 'buffer-number 30)))
 #+end_src
 
-*** vertico                                                         :minibuffer:
+*** vertico
 
 #+begin_src emacs-lisp :lexical t
 (use-package vertico
@@ -2533,7 +2533,7 @@ https://protesilaos.com/emacs/modus-themes
 (modus-themes-load-theme 'modus-vivendi-tinted)
 #+end_src
 
-*** hl-todo                                                     :todo:highlight:
+*** hl-todo
 
 #+begin_src emacs-lisp :lexical t
 (use-package hl-todo
@@ -2557,7 +2557,7 @@ https://protesilaos.com/emacs/modus-themes
           ("DEPRECATED" . "#565f89"))))
 #+end_src
 
-*** colorful-mode                                                    :highlight:
+*** colorful-mode
 
 #+begin_src emacs-lisp :lexical t
 (use-package colorful-mode
@@ -2898,7 +2898,7 @@ https://protesilaos.com/emacs/modus-themes
 
 #+end_src
 
-*** undo                                                                  :undo:
+*** undo
 
 #+begin_src emacs-lisp :lexical t
 (use-package simple
@@ -2935,7 +2935,7 @@ https://protesilaos.com/emacs/modus-themes
     (advice-add fn :around #'my/block-undo)))
 #+end_src
 
-*** undo-fu-session                                                       :undo:
+*** undo-fu-session
 
 #+begin_src emacs-lisp :lexical t
 (use-package undo-fu-session
@@ -2945,7 +2945,7 @@ https://protesilaos.com/emacs/modus-themes
         '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'")))
 #+end_src
 
-*** vundo                                                                 :undo:
+*** vundo
 
 #+begin_src emacs-lisp :lexical t
 (use-package vundo
@@ -2965,7 +2965,7 @@ https://protesilaos.com/emacs/modus-themes
     (binky-margin-local-mode -1)))
 #+end_src
 
-*** undo-hl                                                               :undo:
+*** undo-hl
 
 #+begin_src emacs-lisp :lexical t :tangle no
 (use-package undo-hl
@@ -2991,7 +2991,7 @@ https://protesilaos.com/emacs/modus-themes
   ("C-c c" . coercion-command-map))
 #+end_src
 
-*** consult-todo                                                     :jump:todo:
+*** consult-todo
 
 #+begin_src emacs-lisp :lexical t
 (use-package consult-todo
@@ -3037,7 +3037,7 @@ https://protesilaos.com/emacs/modus-themes
   (setq wgrep-auto-save-buffer t))
 #+end_src
 
-*** rg                                                                  :search:
+*** rg
 
 #+begin_src emacs-lisp :lexical t
 (use-package rg
@@ -3159,7 +3159,7 @@ https://protesilaos.com/emacs/modus-themes
   )
 #+end_src
 
-*** binky                                                                 :jump:
+*** binky
 
 #+begin_src emacs-lisp :lexical t
 (use-package binky
@@ -3183,7 +3183,7 @@ https://protesilaos.com/emacs/modus-themes
   (binky-margin-mode))
 #+end_src
 
-*** xref                                                                  :jump:
+*** xref
 
 #+begin_src emacs-lisp :lexical t
 (use-package xref
@@ -3194,7 +3194,7 @@ https://protesilaos.com/emacs/modus-themes
         xref-show-definitions-function 'xref-show-definitions-completing-read))
 #+end_src
 
-*** goto-addr                                                             :jump:
+*** goto-addr
 
 #+begin_src emacs-lisp :lexical t
 (use-package goto-addr
@@ -3221,7 +3221,7 @@ https://protesilaos.com/emacs/modus-themes
   :hook (after-init-hook . electric-pair-mode))
 #+end_src
 
-*** isolate                                                          :edit:pair:
+*** isolate
 
 #+begin_src emacs-lisp :lexical t
 (use-package isolate
@@ -3231,7 +3231,7 @@ https://protesilaos.com/emacs/modus-themes
   )
 #+end_src
 
-*** diff-mode                                                             :diff:
+*** diff-mode
 
 #+begin_src emacs-lisp :lexical t
 (use-package diff-mode
@@ -3251,7 +3251,7 @@ https://protesilaos.com/emacs/modus-themes
 ;;   (setq ediff-merge-split-window-function 'split-window-horizontally))
 #+end_src
 
-*** smerge-mode                                                       :diff:git:
+*** smerge-mode
 
 #+begin_src emacs-lisp :lexical t
 (use-package smerge-mode
@@ -3336,7 +3336,7 @@ https://protesilaos.com/emacs/modus-themes
     (smerge-refine 2)))
 #+end_src
 
-*** jinx                                                                 :spell:
+*** jinx
 
 #+begin_src emacs-lisp :lexical t
 (use-package jinx)
@@ -3366,7 +3366,7 @@ https://protesilaos.com/emacs/modus-themes
 (use-package xr)
 #+end_src
 
-*** pinyin                                                             :chinese:
+*** pinyin
 
 #+begin_src emacs-lisp :lexical t
 ;; REQUIRE brew install opencc
@@ -3374,7 +3374,7 @@ https://protesilaos.com/emacs/modus-themes
 (use-package pinyinlib :demand t)
 #+end_src
 
-*** ddp                                                                   :data:
+*** ddp
 
 #+begin_src emacs-lisp :lexical t
 (use-package ddp)
@@ -3435,7 +3435,7 @@ https://protesilaos.com/emacs/modus-themes
   )
 #+end_src
 
-*** auth-source                                                       :security:
+*** auth-source
 
 #+begin_src emacs-lisp :lexical t
 (use-package auth-source
@@ -3447,7 +3447,7 @@ https://protesilaos.com/emacs/modus-themes
   (advice-add 'authinfo-mode :override #'authinfo-color-mode))
 #+end_src
 
-*** package-lint                                                           :dev:
+*** package-lint
 
 #+begin_src emacs-lisp :lexical t
 (use-package package-lint
@@ -3462,7 +3462,7 @@ https://protesilaos.com/emacs/modus-themes
       (package-lint-flymake-setup))))
 #+end_src
 
-*** bench-multi                                                            :dev:
+*** bench-multi
 
 #+begin_src emacs-lisp :lexical t
 
@@ -3564,7 +3564,7 @@ Before each form is run, `garbage-collect' is called."
                                    0)))))
 #+end_src
 
-*** term                                                                 :shell:
+*** term
 
 #+begin_src emacs-lisp :lexical t
 (use-package term
@@ -3603,7 +3603,7 @@ Before each form is run, `garbage-collect' is called."
   )
 #+end_src
 
-*** quickrun                                                         :shell:dev:
+*** quickrun
 
 #+begin_src emacs-lisp :lexical t
 (use-package quickrun
@@ -3647,7 +3647,7 @@ Before each form is run, `garbage-collect' is called."
    (t (run-general! quickrun-region quickrun))))
 #+end_src
 
-*** cheatsheet                                                             :dev:
+*** cheatsheet
 
 #+begin_src emacs-lisp :lexical t
 (defvar cheatsheets-ref-lists nil)
@@ -3666,7 +3666,7 @@ If CN is non-nil, search in zh-CN documentation."
     (browse-url (concat "https://cheatsheets.zip/" (if cn (concat "zh-CN/docs/" ref ".html") ref)))))
 #+end_src
 
-*** vc                                                                     :git:
+*** vc
 
 #+begin_src emacs-lisp :lexical t
 (use-package vc
@@ -3675,7 +3675,7 @@ If CN is non-nil, search in zh-CN documentation."
   (setq vc-follow-symlinks t))
 #+end_src
 
-*** git-cliff                                                              :git:
+*** git-cliff
 
 #+begin_src emacs-lisp :lexical t
 (use-package git-cliff
@@ -3688,7 +3688,7 @@ If CN is non-nil, search in zh-CN documentation."
       '("c" "changelog" git-cliff-menu))))
 #+end_src
 
-*** browse-at-remote                                                       :git:
+*** browse-at-remote
 #+begin_src emacs-lisp :lexical t
 (use-package browse-at-remote)
 #+end_src
@@ -3716,7 +3716,7 @@ If CN is non-nil, search in zh-CN documentation."
 (use-package transient-showcase)
 #+end_src
 
-*** magit                                                                  :git:
+*** magit
 
 #+begin_src emacs-lisp :lexical t
 (use-package with-editor)
@@ -3913,7 +3913,7 @@ Otherwise, behave like `magit-display-buffer-traditional'."
   :hook ((emacs-lisp-mode-hook lisp-interaction-mode-hook) . flymake-relint-setup))
 #+end_src
 
-*** treesit                                                            :treesit:
+*** treesit
 
 #+begin_src emacs-lisp :lexical t
 (use-package treesit
@@ -4230,7 +4230,7 @@ to define a org presentation like in system craft
   (setq grip-preview-in-webkit t))
 #+end_src
 
-*** org                                                                    :org:
+*** org
 
 #+begin_src emacs-lisp :lexical t
 (use-package org
@@ -4385,14 +4385,14 @@ to define a org presentation like in system craft
            :empty-lines-after 1))))
 #+end_src
 
-*** ox-gfm                                                                 :org:
+*** ox-gfm
 
 #+begin_src emacs-lisp :lexical t :tangle no
 (use-package ox-gfm
   :init (add-to-list 'org-export-backends 'gfm))
 #+end_src
 
-*** org-modern                                                             :org:
+*** org-modern
 
 #+begin_src emacs-lisp :lexical t
 (use-package org-modern
@@ -4566,7 +4566,7 @@ The DWIM behaviour of this command is as follows:
 ;; )
 #+end_src
 
-*** envrionment                                                            :dev:
+*** envrionment
 
 #+begin_src emacs-lisp :lexical t :tangle yes
 (use-package envrc
